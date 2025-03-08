@@ -13,11 +13,11 @@ USER_AGENTS = [
 ]
 
 def get_random_headers() -> Dict[str, str]:
-    """Retorna cabeçalhos HTTP com um User-Agent aleatório."""
+    """Retorna cabeçalhos HTTP com um User-Agent aleatório e Accept-Language em pt-BR."""
     return {
         "User-Agent": random.choice(USER_AGENTS),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",  # Prioriza português brasileiro
         "Referer": "https://www.youtube.com/",
     }
 
@@ -39,6 +39,8 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
                 'cookies': 'cookies.txt',  # Usa cookies para autenticação
+                # Proxy brasileiro (descomente e configure se desejar)
+                # 'proxy': 'http://SEU_PROXY_BRASILEIRO:PORTA',
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
@@ -73,7 +75,7 @@ def formatar_extinf(tvg_logo: str, group_title: str, titulo: str, url_canal: str
 
 def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> None:
     """Salva as entradas da playlist M3U em um arquivo."""
-    if len(entradas_m3u) > 1:  # Verifica se há lives
+    if len(entradas_m3u) > 1:
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             for linha in entradas_m3u:
                 f.write(f"{linha}\n")
@@ -128,7 +130,7 @@ def main():
     entradas_m3u = ["#EXTM3U"]
     canais_atualizados = {}
 
-    print("Iniciando verificação dos canais...")
+    print("Iniciando verificação dos canais (simulando Brasil)...")
     for canal in canais:
         url_canal = canal["url"]
         m3u8_url, titulo = verificar_live_e_extrair_m3u8(url_canal)
