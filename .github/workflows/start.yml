@@ -2,51 +2,57 @@ name: Run push.py every 6 hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # Executa a cada 6 horas
-  workflow_dispatch:       # Permite execução manual
+    - cron: "0 */6 * * *"  # Executa a cada 6 horas (meia-noite, 6h, 12h, 18h UTC)
+  workflow_dispatch:       # Permite execução manual via interface do GitHub
 
 jobs:
   run-script:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Usa a última versão do Ubuntu disponível no GitHub Actions
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Baixa todo o histórico do repositório para evitar problemas com git pull
+          fetch-depth: 0  # Baixa todo o histórico para evitar conflitos no git pull
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"  # Usa a versão mais recente do Python 3
+          python-version: "3.x"  # Configura Python 3 (versão mais recente disponível)
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install yt-dlp requests  # Inclui requests para testar proxies no script
+          python -m pip install --upgrade pip  # Atualiza pip para a versão mais recente
+          pip install yt-dlp requests  # Instala yt-dlp e requests (necessário para testar proxies)
 
       - name: Add cookies file
         run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
         env:
-          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo do repositório
+
+      - name: Verify environment
+        run: |
+          python --version  # Exibe a versão do Python para depuração
+          pip list | grep -E "yt-dlp|requests"  # Confirma que yt-dlp e requests estão instalados
+          ls -la  # Lista arquivos no diretório para verificar cookies.txt
 
       - name: Run push.py
-        run: python push.py  # Executa o script para verificar lives e atualizar arquivos
+        run: python push.py  # Executa o script para verificar lives e gerar/atualizar arquivos M3U
 
       - name: Commit and push changes
         run: |
-          # Configura identidade do Git
+          # Configura identidade do Git para commits
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          # Faz pull com rebase para sincronizar com o repositório remoto
-          git pull origin main --rebase || true
+          # Sincroniza com o repositório remoto usando rebase
+          git pull origin main --rebase || true  # Ignora falhas (ex.: já atualizado)
           
-          # Adiciona arquivos gerados ou modificados
-          git add lives.m3u8 Hhshs/TV-FIX.m3u || true
+          # Adiciona arquivos gerados ou modificados ao staging
+          git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
           
-          # Faz commit das mudanças (ignora se não houver alterações)
+          # Faz commit das mudanças, ignorando se não houver alterações
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
           
-          # Tenta push normal; se falhar (ex.: conflito), força o push
+          # Tenta push normal; força o push se o normal falhar
           git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || \
           git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
