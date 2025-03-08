@@ -27,7 +27,7 @@ def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "s
             lines = f.readlines()
         
         secure_lines = [line for line in lines if line.strip() and not line.startswith("#") and "TRUE" in line.split("\t")[3]]
-        secure_lines.insert(0, "# Netscape HTTP Cookie File\n")  # Mantém o cabeçalho
+        secure_lines.insert(0, "# Netscape HTTP Cookie File\n")
         
         with open(output_file, "w", encoding="utf-8") as f:
             f.writelines(secure_lines)
@@ -54,8 +54,8 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 'ignoreerrors': True,
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
-                'cookies': secure_cookies_file,  # Usa cookies filtrados
-                'proxy': 'http://177.10.201.230:3128',  # Proxy brasileiro (substitua se necessário)
+                'cookies': secure_cookies_file,
+                'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
@@ -139,14 +139,18 @@ def main():
         }
     ]
 
-    # Filtra cookies com Secure=True antes de começar
+    # Filtra cookies com Secure=True
     filter_secure_cookies()
 
     entradas_m3u = ["#EXTM3U"]
     canais_atualizados = {}
 
     print("Iniciando verificação dos canais (simulando Brasil)...")
-    for canal in canais:
+    for i, canal in enumerate(canais):
+        if i > 0:  # Adiciona intervalo de 5 segundos entre requisições (exceto a primeira)
+            print("Aguardando 5 segundos antes da próxima requisição...")
+            time.sleep(5)
+        
         url_canal = canal["url"]
         m3u8_url, titulo = verificar_live_e_extrair_m3u8(url_canal)
         if m3u8_url and titulo:
