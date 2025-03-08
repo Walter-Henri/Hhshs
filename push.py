@@ -4,31 +4,47 @@ import random
 import time
 from typing import List, Dict, Tuple, Optional
 
-# Lista de User-Agents simulando diferentes navegadores
+# Lista de User-Agents
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
     "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1 Mobile/15E148 Safari/604.1",
 ]
 
 def get_random_headers() -> Dict[str, str]:
-    """Retorna cabeçalhos HTTP com um User-Agent aleatório e Accept-Language em pt-BR."""
+    """Retorna cabeçalhos HTTP com User-Agent aleatório e Accept-Language em pt-BR."""
     return {
         "User-Agent": random.choice(USER_AGENTS),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",  # Prioriza português brasileiro
+        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
         "Referer": "https://www.youtube.com/",
     }
 
+def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "secure_cookies.txt") -> None:
+    """Filtra cookies com Secure=True e salva em um novo arquivo."""
+    try:
+        with open(input_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        
+        secure_lines = [line for line in lines if line.strip() and not line.startswith("#") and "TRUE" in line.split("\t")[3]]
+        secure_lines.insert(0, "# Netscape HTTP Cookie File\n")  # Mantém o cabeçalho
+        
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.writelines(secure_lines)
+        print(f"Cookies com Secure=True salvos em '{output_file}'.")
+    except FileNotFoundError:
+        print(f"Erro: O arquivo '{input_file}' não foi encontrado.")
+        raise
+
 def limpar_titulo(titulo: str) -> str:
-    """Remove a data e hora do final do título e chaves {}."""
+    """Remove data/hora e chaves do título."""
     padrao_data_hora = r'\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$'
     return re.sub(padrao_data_hora, '', titulo).strip('{}')
 
 def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
-    """Verifica se há uma live ativa e extrai o link M3U8 e título com retries e autenticação."""
+    """Verifica live e extrai M3U8 com retries, cookies filtrados e proxy."""
     attempt = 0
+    secure_cookies_file = "secure_cookies.txt"
     while attempt < max_retries:
         try:
             ydl_opts = {
@@ -38,9 +54,8 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 'ignoreerrors': True,
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
-                'cookies': 'cookies.txt',  # Usa cookies para autenticação
-                # Proxy brasileiro (descomente e configure se desejar)
-                # 'proxy': 'http://SEU_PROXY_BRASILEIRO:PORTA',
+                'cookies': secure_cookies_file,  # Usa cookies filtrados
+                'proxy': 'http://177.10.201.230:3128',  # Proxy brasileiro (substitua se necessário)
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
@@ -67,14 +82,14 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 return None, None
 
 def formatar_extinf(tvg_logo: str, group_title: str, titulo: str, url_canal: str) -> List[str]:
-    """Formata a entrada M3U com comentário e linha #EXTINF."""
+    """Formata entrada M3U."""
     return [
         f"# Canal: {url_canal}",
         f'#EXTINF:-1 tvg-logo="{tvg_logo}" group-title="{group_title}", {titulo}'
     ]
 
 def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> None:
-    """Salva as entradas da playlist M3U em um arquivo."""
+    """Salva playlist M3U."""
     if len(entradas_m3u) > 1:
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             for linha in entradas_m3u:
@@ -84,14 +99,12 @@ def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> Non
         print("Nenhuma live encontrada para os canais listados.")
 
 def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhshs/TV-FIX.m3u") -> None:
-    """Atualiza os links M3U8 no arquivo especificado."""
+    """Atualiza links M3U8 no arquivo."""
     try:
         with open(arquivo, "r", encoding="utf-8") as f:
             linhas = f.readlines()
-        
         novas_linhas = []
         url_canal_atual = None
-        
         for linha in linhas:
             linha_stripped = linha.strip()
             if linha_stripped.startswith("# Canal:"):
@@ -105,7 +118,6 @@ def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhsh
             else:
                 novas_linhas.append(linha)
                 url_canal_atual = None
-        
         with open(arquivo, "w", encoding="utf-8") as f:
             f.writelines(novas_linhas)
         print(f"Arquivo '{arquivo}' atualizado com sucesso!")
@@ -113,7 +125,7 @@ def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhsh
         print(f"Erro: O arquivo '{arquivo}' não foi encontrado no repositório.")
 
 def main():
-    """Função principal para verificar lives e atualizar arquivos M3U."""
+    """Função principal."""
     canais = [
         {
             "url": "https://m.youtube.com/@SBTRP/live",
@@ -126,6 +138,9 @@ def main():
             "group-title": "🌍 TV Aberta"
         }
     ]
+
+    # Filtra cookies com Secure=True antes de começar
+    filter_secure_cookies()
 
     entradas_m3u = ["#EXTM3U"]
     canais_atualizados = {}
