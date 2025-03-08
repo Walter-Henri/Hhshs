@@ -166,11 +166,6 @@ def main():
             "url": "https://m.youtube.com/@SBTRP/live",
             "tvg-logo": "https://www.sbt.com.br/assets/images/logo-sbt.webp",
             "group-title": "🌍 TV Aberta"
-        },
-        {
-            "url": "https://m.youtube.com/live/ABVQXgr2LW4",
-            "tvg-logo": "https://www.sbt.com.br/assets/images/logo-sbt.webp",
-            "group-title": "🌍 TV Aberta"
         }
     ]
 
