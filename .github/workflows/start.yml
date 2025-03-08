@@ -2,8 +2,8 @@ name: Run push.py every 6 hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
-  workflow_dispatch:
+    - cron: "0 */6 * * *"  # Executa a cada 6 horas
+  workflow_dispatch:       # Permite execução manual
 
 jobs:
   run-script:
@@ -12,39 +12,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Garante que todo o histórico do repositório seja baixado
+          fetch-depth: 0  # Baixa todo o histórico do repositório para evitar problemas com git pull
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.x"  # Usa a versão mais recente do Python 3
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install yt-dlp
+          pip install yt-dlp requests  # Inclui requests para testar proxies no script
 
       - name: Add cookies file
         run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
         env:
-          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo
 
       - name: Run push.py
-        run: python push.py
+        run: python push.py  # Executa o script para verificar lives e atualizar arquivos
 
       - name: Commit and push changes
         run: |
+          # Configura identidade do Git
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          # Garante que temos a versão mais recente do repositório
+          # Faz pull com rebase para sincronizar com o repositório remoto
           git pull origin main --rebase || true
           
-          # Adiciona arquivos ao commit
+          # Adiciona arquivos gerados ou modificados
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true
           
-          # Faz o commit, mas não falha se não houver mudanças
+          # Faz commit das mudanças (ignora se não houver alterações)
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
           
-          # Tenta fazer push normalmente; se falhar, força o push
-          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
+          # Tenta push normal; se falhar (ex.: conflito), força o push
+          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || \
+          git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
