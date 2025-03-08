@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13.1"
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
@@ -38,4 +38,4 @@ jobs:
           git config --global user.email "action@github.com"
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
-          git push https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || true
+          git push https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:${{ github.ref_name }} || true
