@@ -15,6 +15,12 @@ jobs:
           ref: main          # Força checkout do branch 'main'
           fetch-depth: 0     # Baixa todo o histórico para evitar conflitos no git pull
 
+      - name: Update repository
+        run: |
+          # Atualiza o repositório local com o estado mais recente do 'main'
+          git pull origin main || true  # Ignora falhas (ex.: já atualizado ou conflitos menores)
+          echo "Repositório atualizado com sucesso do branch 'main'."
+
       - name: Verify branch
         run: |
           # Confirma que estamos no branch 'main'
@@ -50,7 +56,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          # Sincroniza com o repositório remoto usando rebase no branch 'main'
+          # Sincroniza novamente com o repositório remoto usando rebase (caso haja mudanças externas durante a execução)
           git pull origin main --rebase || true  # Ignora falhas (ex.: já atualizado)
           
           # Adiciona arquivos gerados ou modificados ao staging
