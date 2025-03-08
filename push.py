@@ -3,12 +3,20 @@ import re
 import random
 import time
 from typing import List, Dict, Tuple, Optional
+import requests
 
 # Lista de User-Agents
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
     "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+]
+
+# Lista de proxies brasileiros (HTTP, públicos para teste - podem ser instáveis)
+PROXIES = [
+    "http://45.190.76.117:999",       # Proxy 1
+    "http://189.89.164.106:8080",     # Proxy 2
+    "http://177.10.201.230:3128",     # Proxy 3
 ]
 
 def get_random_headers() -> Dict[str, str]:
@@ -36,30 +44,53 @@ def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "s
         print(f"Erro: O arquivo '{input_file}' não foi encontrado.")
         raise
 
+def test_proxy(proxy: str) -> bool:
+    """Testa se o proxy está funcional."""
+    try:
+        response = requests.get("https://www.google.com", proxies={"http": proxy, "https": proxy}, timeout=5)
+        return response.status_code == 200
+    except (requests.exceptions.RequestException, requests.exceptions.Timeout):
+        print(f"Proxy {proxy} não está funcionando.")
+        return False
+
+def get_working_proxy(proxies: List[str]) -> Optional[str]:
+    """Retorna o primeiro proxy funcional da lista."""
+    for proxy in proxies:
+        if test_proxy(proxy):
+            print(f"Proxy funcional encontrado: {proxy}")
+            return proxy
+    print("Nenhum proxy funcional encontrado.")
+    return None
+
 def limpar_titulo(titulo: str) -> str:
     """Remove data/hora e chaves do título."""
     padrao_data_hora = r'\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$'
     return re.sub(padrao_data_hora, '', titulo).strip('{}')
 
 def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
+    """Verifica live e extrai M3U8 com retries, cookies filtrados e proxy."""
     attempt = 0
     secure_cookies_file = "secure_cookies.txt"
+    proxy = get_working_proxy(PROXIES)  # Obtém um proxy funcional antes de começar
+    
+    if not proxy:
+        print("Sem proxy funcional disponível. Prosseguindo sem proxy (pode falhar por geolocalização).")
+    
     while attempt < max_retries:
         try:
             ydl_opts = {
                 'format': 'best',
-                'quiet': False,  # Desative quiet para ver logs do yt_dlp
-                'no_warnings': False,  # Desative no_warnings para mais detalhes
+                'quiet': False,  # Logs detalhados
+                'no_warnings': False,
                 'ignoreerrors': True,
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
                 'cookies': secure_cookies_file,
-                'socket_timeout': 10,  # Timeout de 10 segundos
-                'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
-
+                'socket_timeout': 10,
+                'proxy': proxy if proxy else None,  # Usa proxy se disponível
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
+                print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal} (Proxy: {proxy or 'Nenhum'})")
                 info = ydl.extract_info(url_canal, download=False)
                 if not info or not info.get('is_live'):
                     print(f"Não há live em transmissão para {url_canal}.")
@@ -71,7 +102,7 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 titulo = limpar_titulo(info.get('title', 'Live do YouTube'))
                 print(f"Live detectada para {url_canal}! Título: {titulo}")
                 return m3u8_url, titulo
-        except (yt_dlp.utils.DownloadError, requests.exceptions.Timeout, Exception) as e:
+        except (yt_dlp.utils.DownloadError, Exception) as e:
             print(f"Erro na tentativa {attempt + 1}/{max_retries}: {str(e)}")
             attempt += 1
             if attempt < max_retries:
@@ -148,7 +179,7 @@ def main():
 
     print("Iniciando verificação dos canais (simulando Brasil)...")
     for i, canal in enumerate(canais):
-        if i > 0:  # Adiciona intervalo de 5 segundos entre requisições (exceto a primeira)
+        if i > 0:  # Intervalo de 5 segundos entre requisições
             print("Aguardando 5 segundos antes da próxima requisição...")
             time.sleep(5)
         
