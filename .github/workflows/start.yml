@@ -27,6 +27,10 @@ jobs:
         env:
           YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
 
+      # Opcional: Configurar proxy brasileiro (descomente e ajuste)
+      # - name: Set up proxy
+      #   run: echo "export http_proxy=http://SEU_PROXY_BRASILEIRO:PORTA" >> $GITHUB_ENV
+
       - name: Run push.py
         run: python push.py
 
