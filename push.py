@@ -3,7 +3,6 @@ import re
 import random
 import time
 from typing import List, Dict, Tuple, Optional
-import requests
 
 # Lista de User-Agents simulando diferentes navegadores
 USER_AGENTS = [
@@ -23,21 +22,15 @@ def get_random_headers() -> Dict[str, str]:
     }
 
 def limpar_titulo(titulo: str) -> str:
-    """
-    Remove a data e hora do final do título, se presente, e remove chaves {}.
-    """
+    """Remove a data e hora do final do título e chaves {}."""
     padrao_data_hora = r'\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$'
-    titulo_limpo = re.sub(padrao_data_hora, '', titulo).strip()
-    return titulo_limpo.strip('{}')
+    return re.sub(padrao_data_hora, '', titulo).strip('{}')
 
 def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
-    """
-    Verifica se há uma live em andamento no canal e extrai o link M3U8 e o título com retries e cabeçalhos dinâmicos.
-    """
+    """Verifica se há uma live ativa e extrai o link M3U8 e título com retries e autenticação."""
     attempt = 0
     while attempt < max_retries:
         try:
-            # Configurações do yt-dlp com cabeçalhos aleatórios
             ydl_opts = {
                 'format': 'best',
                 'quiet': True,
@@ -45,8 +38,7 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 'ignoreerrors': True,
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
-                # Opcional: Adicione proxies se desejar
-                # 'proxy': 'http://your_proxy:port',
+                'cookies': 'cookies.txt',  # Usa cookies para autenticação
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
@@ -58,36 +50,30 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 if not m3u8_url:
                     print(f"Link M3U8 não encontrado para {url_canal}.")
                     return None, None
-                titulo_original = info.get('title', 'Live do YouTube')
-                titulo = limpar_titulo(titulo_original)
-                print(f"Live detectada para {url_canal}!")
-                print(f"Título limpo: {titulo}")
-                print(f"Link M3U8: {m3u8_url}")
+                titulo = limpar_titulo(info.get('title', 'Live do YouTube'))
+                print(f"Live detectada para {url_canal}! Título: {titulo}")
                 return m3u8_url, titulo
         except yt_dlp.utils.DownloadError as e:
-            print(f"Erro na tentativa {attempt + 1}/{max_retries} para {url_canal}: {e}")
+            print(f"Erro na tentativa {attempt + 1}/{max_retries}: {e}")
             attempt += 1
             if attempt < max_retries:
-                delay = random.uniform(2, 5)  # Delay aleatório entre 2 e 5 segundos
-                print(f"Aguardando {delay:.2f} segundos antes da próxima tentativa...")
+                delay = random.uniform(2, 5)
+                print(f"Aguardando {delay:.2f}s antes da próxima tentativa...")
                 time.sleep(delay)
             else:
                 print(f"Falha após {max_retries} tentativas para {url_canal}.")
                 return None, None
 
 def formatar_extinf(tvg_logo: str, group_title: str, titulo: str, url_canal: str) -> List[str]:
-    """
-    Formata a entrada para a playlist M3U com um comentário contendo o link do canal e a linha #EXTINF.
-    """
-    comentario = f"# Canal: {url_canal}"
-    extinf = f'#EXTINF:-1 tvg-logo="{tvg_logo}" group-title="{group_title}", {titulo}'
-    return [comentario, extinf]
+    """Formata a entrada M3U com comentário e linha #EXTINF."""
+    return [
+        f"# Canal: {url_canal}",
+        f'#EXTINF:-1 tvg-logo="{tvg_logo}" group-title="{group_title}", {titulo}'
+    ]
 
 def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> None:
-    """
-    Salva as entradas da playlist M3U em um arquivo.
-    """
-    if len(entradas_m3u) > 1:  # Se houver pelo menos uma live
+    """Salva as entradas da playlist M3U em um arquivo."""
+    if len(entradas_m3u) > 1:  # Verifica se há lives
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             for linha in entradas_m3u:
                 f.write(f"{linha}\n")
@@ -95,17 +81,15 @@ def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> Non
     else:
         print("Nenhuma live encontrada para os canais listados.")
 
-def atualizar_links_m3u(canais_atualizados: dict[str, str], arquivo: str = "Hhshs/TV-FIX.m3u") -> None:
-    """
-    Atualiza os links M3U8 no arquivo apenas para os canais com '# Canal: <URL>'.
-    """
+def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhshs/TV-FIX.m3u") -> None:
+    """Atualiza os links M3U8 no arquivo especificado."""
     try:
         with open(arquivo, "r", encoding="utf-8") as f:
             linhas = f.readlines()
-
+        
         novas_linhas = []
         url_canal_atual = None
-
+        
         for linha in linhas:
             linha_stripped = linha.strip()
             if linha_stripped.startswith("# Canal:"):
@@ -119,14 +103,15 @@ def atualizar_links_m3u(canais_atualizados: dict[str, str], arquivo: str = "Hhsh
             else:
                 novas_linhas.append(linha)
                 url_canal_atual = None
-
+        
         with open(arquivo, "w", encoding="utf-8") as f:
             f.writelines(novas_linhas)
         print(f"Arquivo '{arquivo}' atualizado com sucesso!")
     except FileNotFoundError:
-        print(f"Erro: O arquivo '{arquivo}' não foi encontrado.")
+        print(f"Erro: O arquivo '{arquivo}' não foi encontrado no repositório.")
 
 def main():
+    """Função principal para verificar lives e atualizar arquivos M3U."""
     canais = [
         {
             "url": "https://m.youtube.com/@SBTRP/live",
@@ -146,26 +131,22 @@ def main():
     print("Iniciando verificação dos canais...")
     for canal in canais:
         url_canal = canal["url"]
-        tvg_logo = canal["tvg-logo"]
-        group_title = canal["group-title"]
-
         m3u8_url, titulo = verificar_live_e_extrair_m3u8(url_canal)
-
         if m3u8_url and titulo:
-            linhas_extinf = formatar_extinf(tvg_logo, group_title, titulo, url_canal)
+            linhas_extinf = formatar_extinf(canal["tvg-logo"], canal["group-title"], titulo, url_canal)
             entradas_m3u.extend(linhas_extinf)
             entradas_m3u.append(m3u8_url)
             canais_atualizados[url_canal] = m3u8_url
             print(f"Canal {url_canal} adicionado a canais_atualizados.")
 
-    print(f"Total de canais atualizados: {len(canais_atualizados)}")
+    print(f"Total de canais com lives: {len(canais_atualizados)}")
     salvar_m3u(entradas_m3u)
-
+    
     if canais_atualizados:
         print("Tentando atualizar Hhshs/TV-FIX.m3u...")
         atualizar_links_m3u(canais_atualizados)
     else:
-        print("Nenhum canal atualizado, pulando atualização de Hhshs/TV-FIX.m3u.")
+        print("Nenhum canal com live ativa, pulando atualização de Hhshs/TV-FIX.m3u.")
 
 if __name__ == "__main__":
     main()
