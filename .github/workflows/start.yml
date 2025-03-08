@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Garante que todo o histórico do repositório seja baixado
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,6 +36,15 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
+          
+          # Garante que temos a versão mais recente do repositório
+          git pull origin main --rebase || true
+          
+          # Adiciona arquivos ao commit
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true
+          
+          # Faz o commit, mas não falha se não houver mudanças
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
-          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || true
+          
+          # Tenta fazer push normalmente; se falhar, força o push
+          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
