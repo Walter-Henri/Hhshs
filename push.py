@@ -162,9 +162,9 @@ def main():
 
     salvar_m3u(entradas_m3u)
     
-    # Após salvar o arquivo lives.m3u8, atualiza o TV-FIX.m3u no caminho correto
+    # Após salvar o arquivo lives.m3u8, atualiza o TV-FIX.m3u
     if canais_atualizados:
-        atualizar_links_m3u(canais_atualizados, arquivo="Hhshs/TV-FIX.m3u")  # Ajuste aqui
+        atualizar_links_m3u(canais_atualizados)
 
 if __name__ == "__main__":
     main()
