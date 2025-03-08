@@ -12,7 +12,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Baixa todo o histórico para evitar conflitos no git pull
+          ref: main          # Força checkout do branch 'main'
+          fetch-depth: 0     # Baixa todo o histórico para evitar conflitos no git pull
+
+      - name: Verify branch
+        run: |
+          # Confirma que estamos no branch 'main'
+          git branch --show-current | grep -q "^main$" || (echo "Erro: Não estamos no branch 'main'" && exit 1)
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,7 +39,7 @@ jobs:
         run: |
           python --version  # Exibe a versão do Python para depuração
           pip list | grep -E "yt-dlp|requests"  # Confirma que yt-dlp e requests estão instalados
-          ls -la  # Lista arquivos no diretório para verificar cookies.txt
+          ls -la  # Lista arquivos no diretório para verificar cookies.txt e outros arquivos
 
       - name: Run push.py
         run: python push.py  # Executa o script para verificar lives e gerar/atualizar arquivos M3U
@@ -44,7 +50,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          # Sincroniza com o repositório remoto usando rebase
+          # Sincroniza com o repositório remoto usando rebase no branch 'main'
           git pull origin main --rebase || true  # Ignora falhas (ex.: já atualizado)
           
           # Adiciona arquivos gerados ou modificados ao staging
@@ -53,6 +59,6 @@ jobs:
           # Faz commit das mudanças, ignorando se não houver alterações
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
           
-          # Tenta push normal; força o push se o normal falhar
+          # Tenta push normal para 'main'; força o push se o normal falhar
           git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || \
           git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
