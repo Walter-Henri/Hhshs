@@ -5,18 +5,21 @@ import time
 from typing import List, Dict, Tuple, Optional
 import requests
 
-# Lista de User-Agents
+# Lista de User-Agents (adicionado Chrome 128 e Edge)
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",  # Chrome 128 (2024)
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",  # Chrome 91
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",  # Safari 14
+    "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",  # Firefox 89
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Edg/128.0.0.0",  # Edge 128
 ]
 
 # Lista de proxies brasileiros (HTTP, públicos para teste - podem ser instáveis)
 PROXIES = [
-    "http://45.190.76.117:999",       # Proxy 1
-    "http://189.89.164.106:8080",     # Proxy 2
-    "http://177.10.201.230:3128",     # Proxy 3
+    "http://45187.28.39.176:80",      # Proxy 1
+    "http://45.190.76.117:999",       # Proxy 2
+    "http://189.89.164.106:8080",     # Proxy 3
+    "http://177.10.201.230:3128",     # Proxy 4
 ]
 
 def get_random_headers() -> Dict[str, str]:
