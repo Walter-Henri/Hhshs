@@ -1,0 +1,39 @@
+name: Run push.py every 6 hours
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # Roda a cada 6 horas (0h, 6h, 12h, 18h UTC)
+  workflow_dispatch:  # Permite execução manual para testes
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      # Faz checkout do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configura o Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"  # Usa a versão mais recente do Python 3
+
+      # Instala dependências
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yt-dlp  # Instala a biblioteca necessária
+
+      # Executa o script push.py
+      - name: Run push.py
+        run: python push.py
+
+      # (Opcional) Faz commit e push dos arquivos gerados
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add lives.m3u8 TV-FIX.m3u || true  # Adiciona os arquivos gerados (ignora se não existirem)
+          git commit -m "Atualiza lives.m3u8 e TV-FIX.m3u automaticamente" || true  # Commit apenas se houver mudanças
+          git push || true  # Faz push (ignora se não houver alterações)
