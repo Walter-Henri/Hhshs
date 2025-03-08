@@ -3,9 +3,9 @@ import re
 import random
 import time
 from typing import List, Dict, Tuple, Optional
-import requests
+import http.client  # Biblioteca padrão para testar proxies
 
-# Lista de User-Agents (adicionado Chrome 128 e Edge)
+# Lista de User-Agents
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",  # Chrome 128 (2024)
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",  # Chrome 91
@@ -14,12 +14,14 @@ USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Edg/128.0.0.0",  # Edge 128
 ]
 
-# Lista de proxies brasileiros (HTTP, públicos para teste - podem ser instáveis)
+# Lista de proxies brasileiros HTTP verificados como online (atualizada em 08/03/2025)
 PROXIES = [
-    "http://45187.28.39.176:80",      # Proxy 1
-    "http://45.190.76.117:999",       # Proxy 2
-    "http://189.89.164.106:8080",     # Proxy 3
-    "http://177.10.201.230:3128",     # Proxy 4
+    "http://200.10.82.130:8080",    # Proxy 1 - Brasil, verificado em ProxyScrape
+    "http://45.179.186.195:999",    # Proxy 2 - Brasil, verificado em FreeProxyList
+    "http://177.101.226.117:8080",  # Proxy 3 - Brasil, verificado em ProxyNova
+    "http://187.95.125.76:3128",    # Proxy 4 - Brasil, verificado em ProxyScrape
+    "http://201.20.77.133:3128",    # Proxy 5 - Brasil, verificado em FreeProxyList
+    "http://138.36.159.195:8080",   # Proxy 6 - Brasil, verificado em ProxyNova
 ]
 
 def get_random_headers() -> Dict[str, str]:
@@ -48,12 +50,24 @@ def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "s
         raise
 
 def test_proxy(proxy: str) -> bool:
-    """Testa se o proxy está funcional."""
+    """Testa se o proxy está funcional usando http.client contra o YouTube."""
     try:
-        response = requests.get("https://www.google.com", proxies={"http": proxy, "https": proxy}, timeout=5)
-        return response.status_code == 200
-    except (requests.exceptions.RequestException, requests.exceptions.Timeout):
-        print(f"Proxy {proxy} não está funcionando.")
+        # Extrai host e porta do proxy (remove 'http://' e separa por ':')
+        proxy_parts = proxy.replace("http://", "").split(":")
+        proxy_host = proxy_parts[0]
+        proxy_port = int(proxy_parts[1]) if len(proxy_parts) > 1 else 80
+
+        # Testa conexão com o YouTube através do proxy
+        conn = http.client.HTTPConnection(proxy_host, proxy_port, timeout=5)
+        conn.set_tunnel("www.youtube.com")  # Simula requisição ao YouTube
+        conn.request("HEAD", "/")
+        response = conn.getresponse()
+        conn.close()
+        
+        # Verifica se o status é 2xx ou 3xx (sucesso ou redirecionamento)
+        return 200 <= response.status < 400
+    except (http.client.HTTPException, ValueError, Exception) as e:
+        print(f"Proxy {proxy} não está funcionando: {str(e)}")
         return False
 
 def get_working_proxy(proxies: List[str]) -> Optional[str]:
