@@ -2,38 +2,40 @@ name: Run push.py every 6 hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # Roda a cada 6 horas (0h, 6h, 12h, 18h UTC)
-  workflow_dispatch:  # Permite execução manual para testes
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
-      # Faz checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Configura o Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      # Instala dependências
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install yt-dlp
 
-      # Executa o script push.py
-      - name: Run push.py
-        run: python push.py  # Se push.py estiver na raiz; caso contrário, ajuste o caminho
+      - name: Add cookies file
+        run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+        env:
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
 
-      # Faz commit e push dos arquivos gerados
+      - name: Run push.py
+        run: python push.py
+
       - name: Commit and push changes
+        env:
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ajuste para o caminho correto
-          git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u automaticamente" || true
-          git push || true
+          git add lives.m3u8 Hhshs/TV-FIX.m3u || true
+          git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
+          git push https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || true
