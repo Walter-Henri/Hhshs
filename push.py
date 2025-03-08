@@ -42,20 +42,21 @@ def limpar_titulo(titulo: str) -> str:
     return re.sub(padrao_data_hora, '', titulo).strip('{}')
 
 def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
-    """Verifica live e extrai M3U8 com retries, cookies filtrados e proxy."""
     attempt = 0
     secure_cookies_file = "secure_cookies.txt"
     while attempt < max_retries:
         try:
             ydl_opts = {
                 'format': 'best',
-                'quiet': True,
-                'no_warnings': True,
+                'quiet': False,  # Desative quiet para ver logs do yt_dlp
+                'no_warnings': False,  # Desative no_warnings para mais detalhes
                 'ignoreerrors': True,
                 'extract_flat': False,
                 'http_headers': get_random_headers(),
                 'cookies': secure_cookies_file,
-                'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
+                'socket_timeout': 10,  # Timeout de 10 segundos
+              # 'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
+
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal}")
@@ -70,8 +71,8 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 titulo = limpar_titulo(info.get('title', 'Live do YouTube'))
                 print(f"Live detectada para {url_canal}! Título: {titulo}")
                 return m3u8_url, titulo
-        except yt_dlp.utils.DownloadError as e:
-            print(f"Erro na tentativa {attempt + 1}/{max_retries}: {e}")
+        except (yt_dlp.utils.DownloadError, requests.exceptions.Timeout, Exception) as e:
+            print(f"Erro na tentativa {attempt + 1}/{max_retries}: {str(e)}")
             attempt += 1
             if attempt < max_retries:
                 delay = random.uniform(2, 5)
