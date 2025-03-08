@@ -31,11 +31,9 @@ jobs:
         run: python push.py
 
       - name: Commit and push changes
-        env:
-          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
-          git push https://x-access-token:${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:${{ github.ref_name }} || true
+          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || true
