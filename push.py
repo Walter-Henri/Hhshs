@@ -55,7 +55,7 @@ def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple
                 'http_headers': get_random_headers(),
                 'cookies': secure_cookies_file,
                 'socket_timeout': 10,  # Timeout de 10 segundos
-              # 'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
+                'proxy': 'http://45.190.76.117:999',  # Novo proxy brasileiro (teste, pode precisar de outro)
 
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
