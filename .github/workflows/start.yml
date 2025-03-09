@@ -17,19 +17,21 @@ jobs:
 
       - name: Update repository
         run: |
-          # Atualiza o repositório local com o estado mais recente do 'main'
+          echo "Atualizando repositório..."
           git pull origin main || true  # Ignora falhas (ex.: já atualizado ou conflitos menores)
           echo "Repositório atualizado com sucesso do branch 'main'."
 
       - name: Verify branch
         run: |
-          # Confirma que estamos no branch 'main'
-          git branch --show-current | grep -q "^main$" || (echo "Erro: Não estamos no branch 'main'" && exit 1)
+          echo "Verificando branch atual..."
+          git branch --show-current | grep -q "^main$" || { echo "Erro: Não estamos no branch 'main'"; exit 1; }
+          echo "Branch 'main' confirmado."
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"  # Configura Python 3 (versão mais recente disponível)
+        continue-on-error: false  # Garante que falhas aqui parem o workflow
 
       - name: Install system dependencies
         run: |
@@ -41,38 +43,38 @@ jobs:
 
       - name: Install Python dependencies
         run: |
+          echo "Verificando versão do Python..."
+          python3 --version || { echo "Erro: Python não encontrado"; exit 1; }
           echo "Atualizando pip..."
-          python -m pip install --upgrade pip || { echo "Erro ao atualizar pip"; exit 1; }
+          python3 -m pip install --upgrade pip || { echo "Erro ao atualizar pip"; exit 1; }
           echo "Instalando yt-dlp, requests e pyppeteer..."
-          pip install yt-dlp requests pyppeteer || { echo "Erro ao instalar pacotes Python"; exit 1; }
+          python3 -m pip install yt-dlp requests pyppeteer || { echo "Erro ao instalar pacotes Python"; exit 1; }
           echo "Baixando Chromium para pyppeteer..."
-          python -m pyppeteer.install || { echo "Erro ao instalar Chromium para pyppeteer"; exit 1; }
+          python3 -m pyppeteer.install || { echo "Erro ao instalar Chromium para pyppeteer"; exit 1; }
           echo "Dependências Python instaladas com sucesso."
 
-      - name: Add cookies file
+      - name: Verify Python dependencies
         run: |
-          echo "Criando cookies.txt a partir do segredo YOUTUBE_COOKIES..."
-          echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt || { echo "Erro ao criar cookies.txt"; exit 1; }
-        env:
-          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo do repositório (opcional)
+          echo "Verificando instalação dos pacotes Python..."
+          python3 -m pip list | grep -E "yt-dlp|requests|pyppeteer" || { echo "Erro: Pacotes yt-dlp, requests ou pyppeteer não encontrados"; exit 1; }
+          echo "Pacotes Python verificados com sucesso."
 
       - name: Verify environment
         run: |
-          echo "Verificando versão do Python..."
-          python --version || { echo "Erro: Python não encontrado"; exit 1; }
-          echo "Verificando pacotes instalados..."
-          pip list | grep -E "yt-dlp|requests|pyppeteer" || { echo "Erro: Pacotes yt-dlp, requests ou pyppeteer não encontrados"; exit 1; }
-          echo "Listando arquivos no diretório..."
+          echo "Verificando ambiente..."
+          python3 --version || { echo "Erro: Python não encontrado"; exit 1; }
           ls -la || { echo "Erro ao listar arquivos"; exit 1; }
+          echo "Ambiente verificado com sucesso."
 
       - name: Run push.py
         run: |
           echo "Executando push.py..."
-          python push.py || { echo "Erro ao executar push.py"; exit 1; }
+          python3 push.py || { echo "Erro ao executar push.py"; exit 1; }
+          echo "push.py executado com sucesso."
 
       - name: Commit and push changes
         run: |
-          # Configura identidade do Git para commits
+          echo "Configurando identidade do Git..."
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
