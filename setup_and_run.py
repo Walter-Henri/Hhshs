@@ -1,86 +1,38 @@
 import subprocess
 import sys
 import os
-import platform
-import threading
-from queue import Queue
 
+# Lista de bibliotecas Python necessárias
 REQUIRED_PACKAGES = [
     "yt_dlp",
     "requests",
     "pyppeteer",
 ]
 
-SYSTEM_DEPENDENCIES = [
-    "libnss3",
-    "libatk1.0-0",
-    "libatk-bridge2.0-0",
-    "libcups2",
-    "libgbm1",
-    "libasound2t64",
-    "libx11-xcb1",
-    "libxcomposite1",
-    "libxcursor1",
-    "libxdamage1",
-    "libxi6",
-    "libxtst6",
-]
-
-def run_command(command, shell=False, check=True):
-    """Executa comandos com tratamento de erro."""
+def run_command(command, shell=False, sudo=False):
+    """Executa comandos com ou sem sudo e tratamento de erro."""
+    if sudo and not os.getenv("TERMUX_VERSION"):  # Evita sudo no Termux
+        command = ["sudo"] + command
     try:
-        subprocess.run(
+        process = subprocess.run(
             command,
             shell=shell,
-            check=check,
+            check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
         )
         print(f"✅ Sucesso: {' '.join(command)}")
+        return process.stdout
     except subprocess.CalledProcessError as e:
         print(f"❌ Erro: {e.stderr}")
-        if check:
-            sys.exit(1)
+        sys.exit(1)
 
 def install_setuptools():
-    """Instala setuptools e pip atualizado."""
+    """Instala setuptools e atualiza pip."""
     print("🔧 Instalando setuptools...")
     run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
     run_command([sys.executable, "-m", "pip", "install", "setuptools"])
-
-def install_system_dep(dep):
-    """Instala uma única dependência do sistema (com sudo)."""
-    print(f"🔧 Instalando {dep}...")
-    run_command(["sudo", "apt-get", "install", "-y", dep], check=False)
-
-def check_and_install_system_deps():
-    """Pula instalação em CI ou instala dependências do sistema com sudo."""
-    if os.getenv("CI"):
-        print("ℹ️ Ambiente CI detectado. Pulando dependências do sistema.")
-        return
-
-    if platform.system() != "Linux":
-        print("ℹ️ Não é Linux. Pulando dependências do sistema.")
-        return
-
-    print("🔧 Verificando dependências do sistema...")
-    try:
-        run_command(["apt-get", "--version"], check=True)
-    except subprocess.CalledProcessError:
-        print("⚠️ 'apt-get' não encontrado. Pulando.")
-        return
-
-    run_command(["sudo", "apt-get", "update", "-y"])
-    
-    threads = []
-    for dep in SYSTEM_DEPENDENCIES:
-        thread = threading.Thread(target=install_system_dep, args=(dep,))
-        thread.start()
-        threads.append(thread)
-    
-    for thread in threads:
-        thread.join()
 
 def check_python_deps():
     """Verifica pacotes Python ausentes."""
@@ -98,9 +50,9 @@ def install_python_deps():
         print("✅ Todos pacotes Python estão instalados.")
 
 def setup_pyppeteer():
-    """Configura Chromium para pyppeteer."""
+    """Configura Chromium para pyppeteer usando pyppeteer-install."""
     print("🔧 Baixando Chromium...")
-    run_command([sys.executable, "-m", "pyppeteer", "install"])
+    run_command(["pyppeteer-install"])
 
 def verify_installation():
     """Verifica instalação completa."""
@@ -121,41 +73,15 @@ def run_push_py():
     print("🚀 Executando push.py...")
     run_command([sys.executable, "push.py"])
 
-def worker(task_queue):
-    """Processa tarefas em threads."""
-    while not task_queue.empty():
-        try:
-            func, args = task_queue.get_nowait()
-            func(*args)
-            task_queue.task_done()
-        except Exception as e:
-            print(f"❌ Erro no worker: {e}")
-            sys.exit(1)
-
 def main():
-    print("🚀 Iniciando configuração com multithreading...")
+    print("🚀 Iniciando configuração...")
     
-    task_queue = Queue()
-    
-    # Ordem crítica das tarefas
-    task_queue.put((install_setuptools, ()))
-    task_queue.put((check_and_install_system_deps, ()))
-    task_queue.put((install_python_deps, ()))      # ✅ Nome correto
-    task_queue.put((setup_pyppeteer, ()))
-    task_queue.put((verify_installation, ()))
-    task_queue.put((run_push_py, ()))
-    
-    # Processa tarefas em threads
-    threads = []
-    for _ in range(4):
-        thread = threading.Thread(target=worker, args=(task_queue,))
-        thread.start()
-        threads.append(thread)
-    
-    task_queue.join()
-    
-    for thread in threads:
-        thread.join()
+    # Executa todas as etapas sequencialmente
+    install_setuptools()
+    install_python_deps()
+    setup_pyppeteer()
+    verify_installation()
+    run_push_py()
     
     print("🏁 Configuração concluída com sucesso!")
 
