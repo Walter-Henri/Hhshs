@@ -3,69 +3,81 @@ name: Run push.py every 6 hours
 on:
   schedule:
     - cron: "0 */6 * * *"  # Executa a cada 6 horas (UTC)
-  workflow_dispatch:       # Permite execução manual
+  workflow_dispatch:       # Permite execução manual via interface do GitHub
 
 jobs:
   run-script:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Usa a versão mais recente do Ubuntu disponível no GitHub Actions
     steps:
+      ##########################################
+      # Checkout do repositório                #
+      ##########################################
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main
-          fetch-depth: 0  # Permite histórico completo para git pull
+          ref: main          # Força checkout do branch 'main'
+          fetch-depth: 0     # Baixa todo o histórico para permitir git pull e commits
 
       ##########################################
-      # Novo passo: Ajustar permissões com sudo #
+      # Ajusta permissões dos arquivos         #
       ##########################################
       - name: Set executable permissions
         run: |
           echo "🔧 Ajustando permissões de arquivos..."
           sudo chmod +x *  # Torna todos os arquivos executáveis
 
+      ##########################################
+      # Configura Python                       #
+      ##########################################
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11"  # Define a versão do Python como 3.11
 
-      ####################################################
-      # Atualizado: Adicionado 'sudo' nas dependências  #
-      ####################################################
+      ##########################################
+      # Instala dependências do sistema        #
+      ##########################################
       - name: Install system dependencies
         run: |
           echo "🔧 Instalando dependências do sistema..."
-          sudo apt-get update -y
+          sudo apt-get update -y  # Atualiza lista de pacotes
           sudo apt-get install -y \
             libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \
             libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
-            libxdamage1 libxi6 libxtst6
+            libxdamage1 libxi6 libxtst6  # Instala dependências necessárias
 
+      ##########################################
+      # Executa o script Python                #
+      ##########################################
       - name: Run setup_and_run.py
         run: |
           echo "🚀 Executando setup_and_run.py..."
           python3 setup_and_run.py || { echo "❌ Erro ao executar script"; exit 1; }
         env:
-          CI: true  # Sinaliza ambiente CI para o script
+          CI: true  # Sinaliza que está sendo executado em um ambiente CI
 
+      ##########################################
+      # Commit e push das mudanças             #
+      ##########################################
       - name: Commit and push changes
         run: |
-          echo "	Configurando Git..."
+          echo "🔧 Configurando Git..."
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          echo "	Pull para sincronizar..."
-          git pull --rebase origin main || true
+          echo "🔧 Pull para sincronizar com o repositório remoto..."
+          git pull --rebase origin main || true  # Ignora falhas se já estiver atualizado
           
-          echo "	Adicionando alterações..."
-          git add lives.m3u8 Hhshs/TV-FIX.m3u || true
+          echo "🔧 Adicionando alterações..."
+          git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
           
-          echo "	Fazendo commit..."
-          git commit -m "Atualiza playlists [automático]" || true
+          echo "🔧 Fazendo commit..."
+          git commit -m "Atualiza playlists [automático]" || true  # Ignora se não houver mudanças
           
-          echo "	Push para origin..."
+          echo "🔧 Push para o repositório remoto..."
           git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
-            echo "	Tentando forçar push..."
+            echo "⚠️ Tentando forçar push..."
             git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
           }
         env:
-          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}  # Token de autenticação para o repositório
