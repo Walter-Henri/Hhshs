@@ -8,7 +8,8 @@ import http.client
 import ssl
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from playwright.sync_api import sync_playwright
+import asyncio
+from pyppeteer import launch
 
 # Códigos ANSI para cores
 class Colors:
@@ -65,46 +66,43 @@ def get_random_headers() -> Dict[str, str]:
         "Referer": "https://www.youtube.com/",
     }
 
-def generate_cookies_with_login(email: str, password: str, output_file: str = "cookies.txt") -> None:
-    """Faz login no YouTube com Playwright e salva os cookies."""
+async def generate_cookies_with_login(email: str, password: str, output_file: str = "cookies.txt") -> None:
+    """Faz login no YouTube com Pyppeteer e salva os cookies."""
     if not os.path.exists(output_file) or os.path.getsize(output_file) == 0:
-        Printer.progress("Fazendo login no YouTube para gerar cookies com Playwright...")
+        Printer.progress("Fazendo login no YouTube para gerar cookies com Pyppeteer...")
         try:
-            with sync_playwright() as p:
-                # Lança o navegador Chromium embutido
-                browser = p.chromium.launch(headless=True)  # headless=True para sem interface gráfica
-                context = browser.new_context()
-                page = context.new_page()
+            # Lança o Chromium embutido
+            browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+            page = await browser.newPage()
 
-                # Acessa a página de login do Google/YouTube
-                page.goto("https://accounts.google.com/ServiceLogin?service=youtube")
+            # Acessa a página de login do Google/YouTube
+            await page.goto("https://accounts.google.com/ServiceLogin?service=youtube")
 
-                # Preenche o e-mail
-                page.wait_for_selector("#identifierId")
-                page.fill("#identifierId", email)
-                page.click("#identifierNext")
+            # Preenche o e-mail
+            await page.waitForSelector("#identifierId")
+            await page.type("#identifierId", email)
+            await page.click("#identifierNext")
+            await page.waitForTimeout(2000)  # Pequeno delay para carregar
 
-                # Preenche a senha
-                page.wait_for_selector("input[name='password']", timeout=10000)
-                page.fill("input[name='password']", password)
-                page.click("#passwordNext")
+            # Preenche a senha
+            await page.waitForSelector("input[name='password']")
+            await page.type("input[name='password']", password)
+            await page.click("#passwordNext")
+            await page.waitForNavigation(timeout=20000)  # Aguarda redirecionamento
 
-                # Aguarda o redirecionamento para o YouTube
-                page.wait_for_url("https://www.youtube.com/*", timeout=20000)
+            # Extrai os cookies
+            cookies = await page.cookies()
+            await browser.close()
 
-                # Extrai os cookies
-                cookies = context.cookies()
-                browser.close()
-
-                # Salva no formato Netscape
-                with open(output_file, "w", encoding="utf-8") as f:
-                    f.write("# Netscape HTTP Cookie File\n")
-                    for cookie in cookies:
-                        if "youtube.com" in cookie["domain"]:
-                            expiry = int(cookie.get("expires", 0)) if cookie.get("expires") > 0 else 0
-                            secure = "TRUE" if cookie.get("secure") else "FALSE"
-                            f.write(f"{cookie['domain']}\tTRUE\t{cookie['path']}\t{secure}\t{expiry}\t{cookie['name']}\t{cookie['value']}\n")
-                Printer.success(f"Cookies gerados e salvos em '{output_file}'")
+            # Salva no formato Netscape
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write("# Netscape HTTP Cookie File\n")
+                for cookie in cookies:
+                    if "youtube.com" in cookie["domain"]:
+                        expiry = int(cookie.get("expires", 0)) if cookie.get("expires") > 0 else 0
+                        secure = "TRUE" if cookie.get("secure") else "FALSE"
+                        f.write(f"{cookie['domain']}\tTRUE\t{cookie['path']}\t{secure}\t{expiry}\t{cookie['name']}\t{cookie['value']}\n")
+            Printer.success(f"Cookies gerados e salvos em '{output_file}'")
         except Exception as e:
             Printer.error(f"Falha ao fazer login e gerar cookies: {str(e)}")
             raise
@@ -297,9 +295,9 @@ def main():
     GOOGLE_EMAIL = "enzoprogeme22@gmail.com"
     GOOGLE_PASSWORD = "enzoprogemefrifrai123"
 
-    # Gera cookies com login automático usando Playwright
+    # Gera cookies com login automático usando Pyppeteer
     try:
-        generate_cookies_with_login(GOOGLE_EMAIL, GOOGLE_PASSWORD)
+        asyncio.run(generate_cookies_with_login(GOOGLE_EMAIL, GOOGLE_PASSWORD))
         filter_secure_cookies()
     except Exception as e:
         Printer.error(f"Abortando execução devido a erro nos cookies: {str(e)}")
