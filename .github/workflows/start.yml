@@ -31,20 +31,27 @@ jobs:
         with:
           python-version: "3.x"  # Configura Python 3 (versão mais recente disponível)
 
-      - name: Install dependencies
+      - name: Install system dependencies
+        run: |
+          # Instala dependências do sistema necessárias para o pyppeteer (Chromium)
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip  # Atualiza pip para a versão mais recente
-          pip install yt-dlp requests playwright  # Instala yt-dlp e requests (necessário para testar proxies)
+          pip install yt-dlp requests pyppeteer  # Instala yt-dlp, requests e pyppeteer
+          python -m pyppeteer.install  # Baixa o Chromium para o pyppeteer
 
       - name: Add cookies file
         run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
         env:
-          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo do repositório
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo do repositório (opcional)
 
       - name: Verify environment
         run: |
           python --version  # Exibe a versão do Python para depuração
-          pip list | grep -E "yt-dlp|requests"  # Confirma que yt-dlp e requests estão instalados
+          pip list | grep -E "yt-dlp|requests|pyppeteer"  # Confirma que yt-dlp, requests e pyppeteer estão instalados
           ls -la  # Lista arquivos no diretório para verificar cookies.txt e outros arquivos
 
       - name: Run push.py
