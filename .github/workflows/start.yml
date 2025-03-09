@@ -33,44 +33,11 @@ jobs:
           python-version: "3.x"  # Configura Python 3 (versão mais recente disponível)
         continue-on-error: false  # Garante que falhas aqui parem o workflow
 
-      - name: Install system dependencies
+      - name: Run setup_and_run.py
         run: |
-          echo "Atualizando pacotes do sistema..."
-          sudo apt-get update -y || { echo "Erro ao atualizar pacotes do sistema"; exit 1; }
-          echo "Instalando dependências do sistema para pyppeteer..."
-          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 || { echo "Erro ao instalar dependências do sistema"; exit 1; }
-          echo "Dependências do sistema instaladas com sucesso."
-
-      - name: Install Python dependencies
-        run: |
-          echo "Verificando versão do Python..."
-          python3 --version || { echo "Erro: Python não encontrado"; exit 1; }
-          echo "Atualizando pip..."
-          python3 -m pip install --upgrade pip || { echo "Erro ao atualizar pip"; exit 1; }
-          echo "Instalando yt-dlp, requests e pyppeteer..."
-          python3 -m pip install yt-dlp requests pyppeteer || { echo "Erro ao instalar pacotes Python"; exit 1; }
-          echo "Baixando Chromium para pyppeteer..."
-          python3 -m pyppeteer.install || { echo "Erro ao instalar Chromium para pyppeteer"; exit 1; }
-          echo "Dependências Python instaladas com sucesso."
-
-      - name: Verify Python dependencies
-        run: |
-          echo "Verificando instalação dos pacotes Python..."
-          python3 -m pip list | grep -E "yt-dlp|requests|pyppeteer" || { echo "Erro: Pacotes yt-dlp, requests ou pyppeteer não encontrados"; exit 1; }
-          echo "Pacotes Python verificados com sucesso."
-
-      - name: Verify environment
-        run: |
-          echo "Verificando ambiente..."
-          python3 --version || { echo "Erro: Python não encontrado"; exit 1; }
-          ls -la || { echo "Erro ao listar arquivos"; exit 1; }
-          echo "Ambiente verificado com sucesso."
-
-      - name: Run push.py
-        run: |
-          echo "Executando push.py..."
-          python3 push.py || { echo "Erro ao executar push.py"; exit 1; }
-          echo "push.py executado com sucesso."
+          echo "Executando setup_and_run.py para instalar dependências e rodar push.py..."
+          python3 setup_and_run.py || { echo "Erro ao executar setup_and_run.py"; exit 1; }
+          echo "setup_and_run.py executado com sucesso."
 
       - name: Commit and push changes
         run: |
