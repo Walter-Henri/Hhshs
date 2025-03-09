@@ -57,7 +57,7 @@ jobs:
           python3 setup_and_run.py || { echo "❌ Erro ao executar setup_and_run.py"; exit 1; }
           echo "✅ setup_and_run.py executado com sucesso."
         env:
-          CI: true  # Sinaliza que está em um ambiente CI (evita instalação de dependências do sistema no script)
+          CI: true  # Sinaliza que está em um ambiente CI
 
       ##########################################
       # Commit e push das mudanças             #
