@@ -33,29 +33,42 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          # Instala dependências do sistema necessárias para o pyppeteer (Chromium)
-          sudo apt-get update
-          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2
+          echo "Atualizando pacotes do sistema..."
+          sudo apt-get update -y || { echo "Erro ao atualizar pacotes do sistema"; exit 1; }
+          echo "Instalando dependências do sistema para pyppeteer..."
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 || { echo "Erro ao instalar dependências do sistema"; exit 1; }
+          echo "Dependências do sistema instaladas com sucesso."
 
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip  # Atualiza pip para a versão mais recente
-          pip install yt-dlp requests pyppeteer  # Instala yt-dlp, requests e pyppeteer
-          python -m pyppeteer.install  # Baixa o Chromium para o pyppeteer
+          echo "Atualizando pip..."
+          python -m pip install --upgrade pip || { echo "Erro ao atualizar pip"; exit 1; }
+          echo "Instalando yt-dlp, requests e pyppeteer..."
+          pip install yt-dlp requests pyppeteer || { echo "Erro ao instalar pacotes Python"; exit 1; }
+          echo "Baixando Chromium para pyppeteer..."
+          python -m pyppeteer.install || { echo "Erro ao instalar Chromium para pyppeteer"; exit 1; }
+          echo "Dependências Python instaladas com sucesso."
 
       - name: Add cookies file
-        run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+        run: |
+          echo "Criando cookies.txt a partir do segredo YOUTUBE_COOKIES..."
+          echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt || { echo "Erro ao criar cookies.txt"; exit 1; }
         env:
           YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}  # Carrega cookies do segredo do repositório (opcional)
 
       - name: Verify environment
         run: |
-          python --version  # Exibe a versão do Python para depuração
-          pip list | grep -E "yt-dlp|requests|pyppeteer"  # Confirma que yt-dlp, requests e pyppeteer estão instalados
-          ls -la  # Lista arquivos no diretório para verificar cookies.txt e outros arquivos
+          echo "Verificando versão do Python..."
+          python --version || { echo "Erro: Python não encontrado"; exit 1; }
+          echo "Verificando pacotes instalados..."
+          pip list | grep -E "yt-dlp|requests|pyppeteer" || { echo "Erro: Pacotes yt-dlp, requests ou pyppeteer não encontrados"; exit 1; }
+          echo "Listando arquivos no diretório..."
+          ls -la || { echo "Erro ao listar arquivos"; exit 1; }
 
       - name: Run push.py
-        run: python push.py  # Executa o script para verificar lives e gerar/atualizar arquivos M3U
+        run: |
+          echo "Executando push.py..."
+          python push.py || { echo "Erro ao executar push.py"; exit 1; }
 
       - name: Commit and push changes
         run: |
@@ -63,15 +76,16 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          # Sincroniza novamente com o repositório remoto usando rebase (caso haja mudanças externas durante a execução)
+          echo "Sincronizando com o repositório remoto..."
           git pull origin main --rebase || true  # Ignora falhas (ex.: já atualizado)
           
-          # Adiciona arquivos gerados ou modificados ao staging
+          echo "Adicionando arquivos ao staging..."
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
           
-          # Faz commit das mudanças, ignorando se não houver alterações
+          echo "Fazendo commit das mudanças..."
           git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
           
-          # Tenta push normal para 'main'; força o push se o normal falhar
+          echo "Enviando mudanças para o repositório..."
           git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || \
-          git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
+          git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || { echo "Erro ao fazer push"; exit 1; }
+          echo "Mudanças enviadas com sucesso."
