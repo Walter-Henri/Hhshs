@@ -2,59 +2,59 @@ name: Run push.py every 6 hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # Executa a cada 6 horas (meia-noite, 6h, 12h, 18h UTC)
-  workflow_dispatch:       # Permite execução manual via interface do GitHub
+    - cron: "0 */6 * * *"  # Executa a cada 6 horas (UTC)
+  workflow_dispatch:       # Permite execução manual
 
 jobs:
   run-script:
-    runs-on: ubuntu-latest  # Usa a última versão do Ubuntu disponível no GitHub Actions
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main          # Força checkout do branch 'main'
-          fetch-depth: 0     # Baixa todo o histórico para evitar conflitos no git pull
-
-      - name: Update repository
-        run: |
-          echo "Atualizando repositório..."
-          git pull origin main || true  # Ignora falhas (ex.: já atualizado ou conflitos menores)
-          echo "Repositório atualizado com sucesso do branch 'main'."
-
-      - name: Verify branch
-        run: |
-          echo "Verificando branch atual..."
-          git branch --show-current | grep -q "^main$" || { echo "Erro: Não estamos no branch 'main'"; exit 1; }
-          echo "Branch 'main' confirmado."
+          ref: main
+          fetch-depth: 0  # Permite histórico completo para git pull
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  # Configura Python 3.11 explicitamente
-        continue-on-error: false  # Garante que falhas aqui parem o workflow
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          echo "🔧 Instalando dependências do sistema..."
+          apt-get update -y
+          apt-get install -y \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \
+            libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
+            libxdamage1 libxi6 libxtst6
 
       - name: Run setup_and_run.py
         run: |
-          echo "Executando setup_and_run.py para instalar dependências e rodar push.py..."
-          python3 setup_and_run.py || { echo "Erro ao executar setup_and_run.py"; exit 1; }
-          echo "setup_and_run.py executado com sucesso."
+          echo "🚀 Executando setup_and_run.py..."
+          python3 setup_and_run.py || { echo "❌ Erro ao executar script"; exit 1; }
+        env:
+          CI: true  # Sinaliza ambiente CI para o script
 
       - name: Commit and push changes
         run: |
-          echo "Configurando identidade do Git..."
+          echo "	Configurando Git..."
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          echo "Sincronizando com o repositório remoto..."
-          git pull origin main --rebase || true  # Ignora falhas (ex.: já atualizado)
+          echo "	Pull para sincronizar..."
+          git pull --rebase origin main || true
           
-          echo "Adicionando arquivos ao staging..."
-          git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
+          echo "	Adicionando alterações..."
+          git add lives.m3u8 Hhshs/TV-FIX.m3u || true
           
-          echo "Fazendo commit das mudanças..."
-          git commit -m "Atualiza lives.m3u8 e Hhshs/TV-FIX.m3u" || true
+          echo "	Fazendo commit..."
+          git commit -m "Atualiza playlists [automático]" || true
           
-          echo "Enviando mudanças para o repositório..."
-          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || \
-          git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || { echo "Erro ao fazer push"; exit 1; }
-          echo "Mudanças enviadas com sucesso."
+          echo "	Push para origin..."
+          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
+            echo "	Tentando forçar push..."
+            git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
+          }
+        env:
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
