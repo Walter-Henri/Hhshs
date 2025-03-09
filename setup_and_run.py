@@ -3,30 +3,36 @@ import sys
 import os
 import platform
 
-# Lista de bibliotecas Python necessárias (excluindo setuptools, que será instalado separadamente)
+# Lista de bibliotecas Python necessárias
 REQUIRED_PACKAGES = [
     "yt_dlp",
     "requests",
     "pyppeteer",
 ]
 
-# Dependências do sistema para pyppeteer (Ubuntu/GitHub Actions)
+# Dependências do sistema para pyppeteer (ajustadas para Ubuntu 22.04+)
 SYSTEM_DEPENDENCIES = [
     "libnss3",
     "libatk1.0-0",
     "libatk-bridge2.0-0",
     "libcups2",
     "libgbm1",
-    "libasound2",
+    "libasound2t64",  # Substituído por libasound2t64 em Ubuntu 22.04+
+    "libx11-xcb1",
+    "libxcomposite1",
+    "libxcursor1",
+    "libxdamage1",
+    "libxi6",
+    "libxtst6",
 ]
 
-def run_command(command, shell=False):
+def run_command(command, shell=False, check=True):
     """Executa um comando no terminal e retorna a saída ou erro."""
     try:
         process = subprocess.run(
             command,
             shell=shell,
-            check=True,
+            check=check,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
@@ -35,7 +41,9 @@ def run_command(command, shell=False):
         return process.stdout
     except subprocess.CalledProcessError as e:
         print(f"❌ Erro ao executar {' '.join(command if not shell else [command])}: {e.stderr}")
-        sys.exit(1)
+        if check:
+            sys.exit(1)
+        return None
 
 def install_setuptools():
     """Instala o setuptools como passo inicial."""
@@ -57,11 +65,15 @@ def check_and_install_system_deps():
         return
 
     run_command(["sudo", "apt-get", "update", "-y"])
-    run_command(["sudo", "apt-get", "install", "-y"] + SYSTEM_DEPENDENCIES)
+    
+    # Instala cada dependência individualmente, ignorando falhas
+    for dep in SYSTEM_DEPENDENCIES:
+        print(f"🔧 Tentando instalar {dep}...")
+        run_command(["sudo", "apt-get", "install", "-y", dep], check=False)
 
 def check_and_install_python_deps():
     """Verifica e instala bibliotecas Python necessárias."""
-    import pkg_resources  # Importado aqui, após setuptools estar garantido
+    import pkg_resources  # Importado após setuptools estar garantido
     
     print("🔧 Verificando e instalando bibliotecas Python...")
     installed = {pkg.key for pkg in pkg_resources.working_set}
@@ -78,7 +90,7 @@ def check_and_install_python_deps():
 
 def verify_installation():
     """Verifica se todas as bibliotecas estão instaladas."""
-    import pkg_resources  # Importado aqui, após setuptools estar garantido
+    import pkg_resources  # Importado após setuptools estar garantido
     
     print("🔍 Verificando instalação...")
     installed = {pkg.key for pkg in pkg_resources.working_set}
@@ -104,10 +116,16 @@ def main():
     # Instala setuptools primeiro
     install_setuptools()
     
-    # Agora é seguro importar pkg_resources nas funções seguintes
+    # Instala dependências do sistema
     check_and_install_system_deps()
+    
+    # Instala bibliotecas Python
     check_and_install_python_deps()
+    
+    # Verifica a instalação
     verify_installation()
+    
+    # Executa push.py
     run_push_py()
     
     print("🏁 Processo concluído com sucesso!")
