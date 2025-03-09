@@ -71,30 +71,19 @@ async def generate_cookies_with_login(email: str, password: str, output_file: st
     if not os.path.exists(output_file) or os.path.getsize(output_file) == 0:
         Printer.progress("Fazendo login no YouTube para gerar cookies com Pyppeteer...")
         try:
-            # Lança o Chromium embutido
             browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
             page = await browser.newPage()
-
-            # Acessa a página de login do Google/YouTube
             await page.goto("https://accounts.google.com/ServiceLogin?service=youtube")
-
-            # Preenche o e-mail
             await page.waitForSelector("#identifierId")
             await page.type("#identifierId", email)
             await page.click("#identifierNext")
-            await page.waitForTimeout(2000)  # Pequeno delay para carregar
-
-            # Preenche a senha
+            await page.waitForTimeout(2000)
             await page.waitForSelector("input[name='password']")
             await page.type("input[name='password']", password)
             await page.click("#passwordNext")
-            await page.waitForNavigation(timeout=20000)  # Aguarda redirecionamento
-
-            # Extrai os cookies
+            await page.waitForNavigation(timeout=20000)
             cookies = await page.cookies()
             await browser.close()
-
-            # Salva no formato Netscape
             with open(output_file, "w", encoding="utf-8") as f:
                 f.write("# Netscape HTTP Cookie File\n")
                 for cookie in cookies:
@@ -114,14 +103,11 @@ def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "s
     try:
         with open(input_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        
         secure_lines = [line for line in lines if line.strip() and not line.startswith("#") and "TRUE" in line.split("\t")[3]]
         secure_lines.insert(0, "# Netscape HTTP Cookie File\n")
-        
         if not secure_lines[1:]:
             Printer.error("Nenhum cookie seguro encontrado no arquivo 'cookies.txt'")
             raise ValueError("Arquivo de cookies vazio ou inválido")
-        
         with open(output_file, "w", encoding="utf-8") as f:
             f.writelines(secure_lines)
         Printer.success(f"Cookies seguros salvos em '{output_file}' com {len(secure_lines) - 1} entradas")
@@ -156,24 +142,30 @@ def load_proxies(file_path: str = "proxys.txt") -> List[str]:
         return []
 
 def test_proxy(proxy: str) -> bool:
-    """Testa se o proxy está funcional usando HTTPS."""
+    """Testa se o proxy está funcional (suporta HTTP e SOCKS4)."""
     try:
-        proxy_parts = proxy.replace("http://", "").split(":")
+        # Remove o protocolo e separa host/porta
+        proxy_clean = proxy.replace("http://", "").replace("socks4://", "")
+        proxy_parts = proxy_clean.split(":")
         proxy_host = proxy_parts[0]
         proxy_port = int(proxy_parts[1]) if len(proxy_parts) > 1 else 80
 
+        # Testa a conexão via HTTPS
         conn = http.client.HTTPSConnection(proxy_host, proxy_port, timeout=5)
         conn.set_tunnel("www.youtube.com")
         conn.request("HEAD", "/")
         response = conn.getresponse()
         conn.close()
         return 200 <= response.status < 400
+    except ValueError as e:
+        Printer.debug(f"Proxy {proxy} falhou: {str(e)}")
+        return False
     except Exception as e:
         Printer.debug(f"Proxy {proxy} falhou: {str(e)}")
         return False
 
 def get_working_proxy(proxies: List[str]) -> Optional[str]:
-    """Encontra a primeira proxy funcional e retorna ela, interrompendo o teste das demais."""
+    """Encontra a primeira proxy funcional e retorna ela."""
     Printer.progress("Testando proxies disponíveis...")
     with ThreadPoolExecutor(max_workers=10) as executor:
         future_to_proxy = {executor.submit(test_proxy, proxy): proxy for proxy in proxies}
@@ -305,11 +297,21 @@ def main():
 
     # Tenta carregar e testar a proxy de "tst.txt" primeiro
     tst_proxy = load_proxy("tst.txt")
-    if tst_proxy and test_proxy(tst_proxy):
-        proxy = tst_proxy
-        Printer.success("Proxy funcional encontrada em 'tst.txt'. Usando-a.")
+    if tst_proxy:
+        if test_proxy(tst_proxy):
+            proxy = tst_proxy
+            Printer.success(f"Proxy funcional encontrada em 'tst.txt': {proxy}. Usando-a.")
+        else:
+            Printer.warning(f"Proxy de 'tst.txt' ({tst_proxy}) não está funcional. Testando proxies de 'proxys.txt'...")
+            proxies = load_proxies("proxys.txt")
+            if not proxies:
+                Printer.error("Nenhuma proxy encontrada em 'proxys.txt'. Abortando.")
+                return
+            proxy = get_working_proxy(proxies)
+            if not proxy:
+                Printer.error("Nenhum proxy funcional encontrado em 'proxys.txt'. Abortando.")
+                return
     else:
-        # Se a proxy de "tst.txt" não funcionar, carrega de "proxys.txt"
         proxies = load_proxies("proxys.txt")
         if not proxies:
             Printer.error("Nenhuma proxy encontrada em 'proxys.txt'. Abortando.")
