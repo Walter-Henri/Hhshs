@@ -45,21 +45,26 @@ def run_command(command, shell=False, check=True):
 
 def install_setuptools():
     """Instala setuptools e pip atualizado."""
-    print("🔧 Iniciando instalação do setuptools...")
+    print("🔧 Instalando setuptools...")
     run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
     run_command([sys.executable, "-m", "pip", "install", "setuptools"])
 
 def install_system_dep(dep):
-    """Instala uma única dependência do sistema."""
+    """Instala uma única dependência do sistema (com sudo)."""
     print(f"🔧 Instalando {dep}...")
     run_command(["sudo", "apt-get", "install", "-y", dep], check=False)
 
 def check_and_install_system_deps():
-    """Instala dependências do sistema em paralelo."""
+    """Pula instalação em CI ou instala dependências do sistema com sudo."""
+    if os.getenv("CI"):
+        print("ℹ️ Ambiente CI detectado. Pulando dependências do sistema.")
+        return
+
     if platform.system() != "Linux":
         print("ℹ️ Não é Linux. Pulando dependências do sistema.")
         return
 
+    print("🔧 Verificando dependências do sistema...")
     try:
         run_command(["apt-get", "--version"], check=True)
     except subprocess.CalledProcessError:
@@ -68,64 +73,33 @@ def check_and_install_system_deps():
 
     run_command(["sudo", "apt-get", "update", "-y"])
     
-    # Usar threads para instalar dependências em paralelo
     threads = []
     for dep in SYSTEM_DEPENDENCIES:
         thread = threading.Thread(target=install_system_dep, args=(dep,))
         thread.start()
         threads.append(thread)
     
-    # Aguardar todas as threads finalizarem
     for thread in threads:
         thread.join()
 
 def check_python_deps():
-    """Verifica dependências Python ausentes."""
+    """Verifica pacotes Python ausentes."""
     import pkg_resources
     installed = {pkg.key for pkg in pkg_resources.working_set}
     return [pkg for pkg in REQUIRED_PACKAGES if pkg.replace("_", "-") not in installed]
 
-def install_python_deps(packages):
-    """Instala pacotes Python em lote."""
-    if packages:
-        print(f"🔧 Instalando pacotes Python: {packages}")
-        run_command([sys.executable, "-m", "pip", "install"] + packages)
+def install_python_deps():
+    """Instala pacotes Python ausentes."""
+    missing = check_python_deps()
+    if missing:
+        print(f"🔧 Instalando pacotes Python: {missing}")
+        run_command([sys.executable, "-m", "pip", "install"] + missing)
+    else:
+        print("✅ Todos pacotes Python estão instalados.")
 
-# ... (restante do código igual) ...
-
-def check_and_install_system_deps():
-    """Instala dependências do sistema (apenas em Linux, sem sudo no CI)."""
-    if platform.system() != "Linux":
-        print("ℹ️ Não é Linux. Pulando dependências do sistema.")
-        return
-
-    if os.getenv("CI"):
-        print("ℹ️ Ambiente CI detectado. Pulando instalação de dependências do sistema.")
-        return
-
-    print("🔧 Verificando dependências do sistema...")
-    try:
-        run_command(["apt-get", "--version"])
-    except subprocess.CalledProcessError:
-        print("⚠️ 'apt-get' não encontrado. Pulando.")
-        return
-
-    run_command(["apt-get", "update", "-y"])  # Sem sudo
-    
-    # Instalar dependências em paralelo (sem sudo)
-    threads = []
-    for dep in SYSTEM_DEPENDENCIES:
-        thread = threading.Thread(target=install_system_dep, args=(dep,))
-        thread.start()
-        threads.append(thread)
-    
-    for thread in threads:
-        thread.join()
-
-# ... (restante do código igual) ...
 def setup_pyppeteer():
-    """Configura pyppeteer (Chromium)."""
-    print("🔧 Baixando Chromium para pyppeteer...")
+    """Configura Chromium para pyppeteer."""
+    print("🔧 Baixando Chromium...")
     run_command([sys.executable, "-m", "pyppeteer", "install"])
 
 def verify_installation():
@@ -140,7 +114,7 @@ def verify_installation():
     print("✅ Todas as dependências estão OK.")
 
 def run_push_py():
-    """Executa o script principal."""
+    """Executa push.py."""
     if not os.path.exists("push.py"):
         print("❌ Erro: push.py não encontrado!")
         sys.exit(1)
@@ -148,7 +122,7 @@ def run_push_py():
     run_command([sys.executable, "push.py"])
 
 def worker(task_queue):
-    """Worker para processar tarefas em threads."""
+    """Processa tarefas em threads."""
     while not task_queue.empty():
         try:
             func, args = task_queue.get_nowait()
@@ -161,28 +135,25 @@ def worker(task_queue):
 def main():
     print("🚀 Iniciando configuração com multithreading...")
     
-    # Fila de tarefas sequenciais
     task_queue = Queue()
     
-    # Adicionar tarefas na ordem correta
+    # Ordem crítica das tarefas
     task_queue.put((install_setuptools, ()))
     task_queue.put((check_and_install_system_deps, ()))
-    task_queue.put((check_and_install_python_deps, ()))
+    task_queue.put((install_python_deps, ()))      # ✅ Nome correto
     task_queue.put((setup_pyppeteer, ()))
     task_queue.put((verify_installation, ()))
     task_queue.put((run_push_py, ()))
     
-    # Criar threads para processar a fila
+    # Processa tarefas em threads
     threads = []
-    for _ in range(4):  # Número de threads simultâneas
+    for _ in range(4):
         thread = threading.Thread(target=worker, args=(task_queue,))
         thread.start()
         threads.append(thread)
     
-    # Aguardar conclusão de todas as tarefas
     task_queue.join()
     
-    # Parar threads após conclusão
     for thread in threads:
         thread.join()
     
