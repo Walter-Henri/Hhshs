@@ -1,17 +1,18 @@
 import subprocess
 import sys
 import os
+import importlib.metadata
 
 # Lista de bibliotecas Python necessárias
 REQUIRED_PACKAGES = [
-    "yt_dlp",
+    "yt-dlp",  # Nome correto no PyPI
     "requests",
     "pyppeteer",
 ]
 
 def run_command(command, shell=False, sudo=False):
     """Executa comandos com ou sem sudo e tratamento de erro."""
-    if sudo and not os.getenv("TERMUX_VERSION"):  # Evita sudo no Termux
+    if sudo and not os.getenv("TERMUX_VERSION"):
         command = ["sudo"] + command
     try:
         process = subprocess.run(
@@ -28,61 +29,50 @@ def run_command(command, shell=False, sudo=False):
         print(f"❌ Erro: {e.stderr}")
         sys.exit(1)
 
-def install_setuptools():
-    """Instala setuptools e atualiza pip."""
-    print("🔧 Instalando setuptools...")
-    run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
-    run_command([sys.executable, "-m", "pip", "install", "setuptools"])
-
-def check_python_deps():
-    """Verifica pacotes Python ausentes."""
-    import pkg_resources
-    installed = {pkg.key for pkg in pkg_resources.working_set}
-    return [pkg for pkg in REQUIRED_PACKAGES if pkg.replace("_", "-") not in installed]
-
 def install_python_deps():
-    """Instala pacotes Python ausentes."""
-    missing = check_python_deps()
+    """Instala pacotes Python necessários."""
+    print("🔧 Atualizando pip...")
+    run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+    
+    print("🔧 Verificando e instalando pacotes Python...")
+    installed = {pkg.metadata["Name"].lower() for pkg in importlib.metadata.distributions()}
+    missing = [pkg for pkg in REQUIRED_PACKAGES if pkg.lower() not in installed]
+    
     if missing:
-        print(f"🔧 Instalando pacotes Python: {missing}")
+        print(f"ℹ️ Instalando pacotes ausentes: {missing}")
         run_command([sys.executable, "-m", "pip", "install"] + missing)
     else:
-        print("✅ Todos pacotes Python estão instalados.")
+        print("✅ Todos pacotes Python já estão instalados.")
 
 def setup_pyppeteer():
-    """Configura Chromium para pyppeteer usando pyppeteer-install."""
+    """Configura Chromium para pyppeteer."""
     print("🔧 Baixando Chromium...")
     run_command(["pyppeteer-install"])
 
 def verify_installation():
-    """Verifica instalação completa."""
-    import pkg_resources
+    """Verifica se todas as bibliotecas estão instaladas."""
     print("🔍 Verificação final...")
-    installed = {pkg.key for pkg in pkg_resources.working_set}
+    installed = {pkg.metadata["Name"].lower() for pkg in importlib.metadata.distributions()}
     for pkg in REQUIRED_PACKAGES:
-        if pkg.replace("_", "-") not in installed:
+        if pkg.lower() not in installed:
             print(f"❌ Erro: {pkg} não instalado!")
             sys.exit(1)
-    print("✅ Todas as dependências estão OK.")
+        print(f"✅ {pkg} instalado.")
 
 def run_push_py():
-    """Executa push.py."""
+    """Executa push.py com sudo no GitHub Actions."""
     if not os.path.exists("push.py"):
         print("❌ Erro: push.py não encontrado!")
         sys.exit(1)
     print("🚀 Executando push.py...")
-    run_command([sys.executable, "push.py"])
+    run_command([sys.executable, "push.py"], sudo=True)
 
 def main():
     print("🚀 Iniciando configuração...")
-    
-    # Executa todas as etapas sequencialmente
-    install_setuptools()
     install_python_deps()
     setup_pyppeteer()
     verify_installation()
     run_push_py()
-    
     print("🏁 Configuração concluída com sucesso!")
 
 if __name__ == "__main__":
