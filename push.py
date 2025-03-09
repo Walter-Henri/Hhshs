@@ -2,26 +2,58 @@ import yt_dlp
 import re
 import random
 import time
+import threading
 from typing import List, Dict, Tuple, Optional
-import http.client  # Biblioteca padrão para testar proxies
+import http.client
+import ssl
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
+from playwright.sync_api import sync_playwright
+
+# Códigos ANSI para cores
+class Colors:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BLUE = '\033[94m'
+    MAGENTA = '\033[95m'
+    CYAN = '\033[96m'
+    WHITE = '\033[97m'
+    RESET = '\033[0m'
+
+# Classe para prints estilizados
+class Printer:
+    @staticmethod
+    def success(msg: str):
+        print(f"{Colors.GREEN}✅ [SUCESSO] {msg}{Colors.RESET}")
+
+    @staticmethod
+    def warning(msg: str):
+        print(f"{Colors.YELLOW}⚠️ [ATENÇÃO] {msg}{Colors.RESET}")
+
+    @staticmethod
+    def error(msg: str):
+        print(f"{Colors.RED}❌ [ERRO] {msg}{Colors.RESET}")
+
+    @staticmethod
+    def info(msg: str):
+        print(f"{Colors.CYAN}ℹ️ [INFO] {msg}{Colors.RESET}")
+
+    @staticmethod
+    def progress(msg: str):
+        print(f"{Colors.MAGENTA}⌛ [PROGRESSO] {msg}{Colors.RESET}")
+
+    @staticmethod
+    def debug(msg: str):
+        print(f"{Colors.BLUE}🐛 [DEBUG] {msg}{Colors.RESET}")
 
 # Lista de User-Agents
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",  # Chrome 128 (2024)
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",  # Chrome 91
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",  # Safari 14
-    "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",  # Firefox 89
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Edg/128.0.0.0",  # Edge 128
-]
-
-# Lista de proxies brasileiros HTTP verificados como online (atualizada em 08/03/2025)
-PROXIES = [
-    "http://200.10.82.130:8080",    # Proxy 1 - Brasil, verificado em ProxyScrape
-    "http://45.179.186.195:999",    # Proxy 2 - Brasil, verificado em FreeProxyList
-    "http://177.101.226.117:8080",  # Proxy 3 - Brasil, verificado em ProxyNova
-    "http://187.95.125.76:3128",    # Proxy 4 - Brasil, verificado em ProxyScrape
-    "http://201.20.77.133:3128",    # Proxy 5 - Brasil, verificado em FreeProxyList
-    "http://138.36.159.195:8080",   # Proxy 6 - Brasil, verificado em ProxyNova
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Edg/128.0.0.0",
 ]
 
 def get_random_headers() -> Dict[str, str]:
@@ -33,6 +65,52 @@ def get_random_headers() -> Dict[str, str]:
         "Referer": "https://www.youtube.com/",
     }
 
+def generate_cookies_with_login(email: str, password: str, output_file: str = "cookies.txt") -> None:
+    """Faz login no YouTube com Playwright e salva os cookies."""
+    if not os.path.exists(output_file) or os.path.getsize(output_file) == 0:
+        Printer.progress("Fazendo login no YouTube para gerar cookies com Playwright...")
+        try:
+            with sync_playwright() as p:
+                # Lança o navegador Chromium embutido
+                browser = p.chromium.launch(headless=True)  # headless=True para sem interface gráfica
+                context = browser.new_context()
+                page = context.new_page()
+
+                # Acessa a página de login do Google/YouTube
+                page.goto("https://accounts.google.com/ServiceLogin?service=youtube")
+
+                # Preenche o e-mail
+                page.wait_for_selector("#identifierId")
+                page.fill("#identifierId", email)
+                page.click("#identifierNext")
+
+                # Preenche a senha
+                page.wait_for_selector("input[name='password']", timeout=10000)
+                page.fill("input[name='password']", password)
+                page.click("#passwordNext")
+
+                # Aguarda o redirecionamento para o YouTube
+                page.wait_for_url("https://www.youtube.com/*", timeout=20000)
+
+                # Extrai os cookies
+                cookies = context.cookies()
+                browser.close()
+
+                # Salva no formato Netscape
+                with open(output_file, "w", encoding="utf-8") as f:
+                    f.write("# Netscape HTTP Cookie File\n")
+                    for cookie in cookies:
+                        if "youtube.com" in cookie["domain"]:
+                            expiry = int(cookie.get("expires", 0)) if cookie.get("expires") > 0 else 0
+                            secure = "TRUE" if cookie.get("secure") else "FALSE"
+                            f.write(f"{cookie['domain']}\tTRUE\t{cookie['path']}\t{secure}\t{expiry}\t{cookie['name']}\t{cookie['value']}\n")
+                Printer.success(f"Cookies gerados e salvos em '{output_file}'")
+        except Exception as e:
+            Printer.error(f"Falha ao fazer login e gerar cookies: {str(e)}")
+            raise
+    else:
+        Printer.info(f"Arquivo de cookies '{output_file}' já existe e será usado.")
+
 def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "secure_cookies.txt") -> None:
     """Filtra cookies com Secure=True e salva em um novo arquivo."""
     try:
@@ -42,93 +120,130 @@ def filter_secure_cookies(input_file: str = "cookies.txt", output_file: str = "s
         secure_lines = [line for line in lines if line.strip() and not line.startswith("#") and "TRUE" in line.split("\t")[3]]
         secure_lines.insert(0, "# Netscape HTTP Cookie File\n")
         
+        if not secure_lines[1:]:
+            Printer.error("Nenhum cookie seguro encontrado no arquivo 'cookies.txt'")
+            raise ValueError("Arquivo de cookies vazio ou inválido")
+        
         with open(output_file, "w", encoding="utf-8") as f:
             f.writelines(secure_lines)
-        print(f"Cookies com Secure=True salvos em '{output_file}'.")
+        Printer.success(f"Cookies seguros salvos em '{output_file}' com {len(secure_lines) - 1} entradas")
     except FileNotFoundError:
-        print(f"Erro: O arquivo '{input_file}' não foi encontrado.")
+        Printer.error(f"Arquivo '{input_file}' não encontrado")
         raise
 
-def test_proxy(proxy: str) -> bool:
-    """Testa se o proxy está funcional usando http.client contra o YouTube."""
+def load_proxy(file_path: str = "tst.txt") -> Optional[str]:
+    """Lê a proxy do arquivo especificado e retorna ela."""
     try:
-        # Extrai host e porta do proxy (remove 'http://' e separa por ':')
+        with open(file_path, "r", encoding="utf-8") as f:
+            proxy = f.readline().strip()
+        if proxy:
+            Printer.info(f"Proxy carregada de '{file_path}': {proxy}")
+            return proxy
+        else:
+            Printer.warning(f"Arquivo '{file_path}' está vazio")
+            return None
+    except FileNotFoundError:
+        Printer.warning(f"Arquivo '{file_path}' não encontrado")
+        return None
+
+def load_proxies(file_path: str = "proxys.txt") -> List[str]:
+    """Lê as proxies do arquivo especificado e retorna uma lista."""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            proxies = [line.strip() for line in f if line.strip()]
+        Printer.info(f"{len(proxies)} proxies carregadas de '{file_path}'")
+        return proxies
+    except FileNotFoundError:
+        Printer.error(f"Arquivo '{file_path}' não encontrado")
+        return []
+
+def test_proxy(proxy: str) -> bool:
+    """Testa se o proxy está funcional usando HTTPS."""
+    try:
         proxy_parts = proxy.replace("http://", "").split(":")
         proxy_host = proxy_parts[0]
         proxy_port = int(proxy_parts[1]) if len(proxy_parts) > 1 else 80
 
-        # Testa conexão com o YouTube através do proxy
-        conn = http.client.HTTPConnection(proxy_host, proxy_port, timeout=5)
-        conn.set_tunnel("www.youtube.com")  # Simula requisição ao YouTube
+        conn = http.client.HTTPSConnection(proxy_host, proxy_port, timeout=5)
+        conn.set_tunnel("www.youtube.com")
         conn.request("HEAD", "/")
         response = conn.getresponse()
         conn.close()
-        
-        # Verifica se o status é 2xx ou 3xx (sucesso ou redirecionamento)
         return 200 <= response.status < 400
-    except (http.client.HTTPException, ValueError, Exception) as e:
-        print(f"Proxy {proxy} não está funcionando: {str(e)}")
+    except Exception as e:
+        Printer.debug(f"Proxy {proxy} falhou: {str(e)}")
         return False
 
 def get_working_proxy(proxies: List[str]) -> Optional[str]:
-    """Retorna o primeiro proxy funcional da lista."""
-    for proxy in proxies:
-        if test_proxy(proxy):
-            print(f"Proxy funcional encontrado: {proxy}")
-            return proxy
-    print("Nenhum proxy funcional encontrado.")
+    """Encontra a primeira proxy funcional e retorna ela, interrompendo o teste das demais."""
+    Printer.progress("Testando proxies disponíveis...")
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_proxy = {executor.submit(test_proxy, proxy): proxy for proxy in proxies}
+        for future in as_completed(future_to_proxy):
+            proxy = future_to_proxy[future]
+            try:
+                if future.result():
+                    Printer.success(f"Primeira proxy ativa: {proxy}")
+                    save_working_proxy(proxy)
+                    return proxy
+            except Exception as e:
+                Printer.debug(f"Erro ao testar proxy {proxy}: {str(e)}")
+    Printer.warning("Nenhum proxy funcional encontrado")
     return None
+
+def save_working_proxy(proxy: str, file_path: str = "tst.txt") -> None:
+    """Salva a proxy funcional em um arquivo."""
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(f"{proxy}\n")
+    Printer.success(f"Proxy salva em '{file_path}'")
 
 def limpar_titulo(titulo: str) -> str:
     """Remove data/hora e chaves do título."""
     padrao_data_hora = r'\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$'
     return re.sub(padrao_data_hora, '', titulo).strip('{}')
 
-def verificar_live_e_extrair_m3u8(url_canal: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
-    """Verifica live e extrai M3U8 com retries, cookies filtrados e proxy."""
+def verificar_live_e_extrair_m3u8(url_canal: str, proxy: Optional[str], max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
+    """Verifica live com tratamento de erros robusto."""
     attempt = 0
     secure_cookies_file = "secure_cookies.txt"
-    proxy = get_working_proxy(PROXIES)  # Obtém um proxy funcional antes de começar
-    
-    if not proxy:
-        print("Sem proxy funcional disponível. Prosseguindo sem proxy (pode falhar por geolocalização).")
-    
+
     while attempt < max_retries:
         try:
             ydl_opts = {
                 'format': 'best',
-                'quiet': False,  # Logs detalhados
+                'quiet': True,
                 'no_warnings': False,
                 'ignoreerrors': True,
-                'extract_flat': False,
                 'http_headers': get_random_headers(),
                 'cookies': secure_cookies_file,
-                'socket_timeout': 10,
-                'proxy': proxy if proxy else None,  # Usa proxy se disponível
+                'socket_timeout': 15,
+                'proxy': proxy or None,
             }
+
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                print(f"Tentativa {attempt + 1}/{max_retries} - Verificando live em: {url_canal} (Proxy: {proxy or 'Nenhum'})")
+                Printer.info(f"Tentativa {attempt+1}/{max_retries} | 📡 Verificando: {url_canal}")
                 info = ydl.extract_info(url_canal, download=False)
+                
                 if not info or not info.get('is_live'):
-                    print(f"Não há live em transmissão para {url_canal}.")
+                    Printer.warning(f"🔴 Live offline: {url_canal}")
                     return None, None
-                m3u8_url = info.get('url')
-                if not m3u8_url:
-                    print(f"Link M3U8 não encontrado para {url_canal}.")
+                
+                if not (m3u8_url := info.get('url')):
+                    Printer.error(f"❓ Link M3U8 não encontrado: {url_canal}")
                     return None, None
-                titulo = limpar_titulo(info.get('title', 'Live do YouTube'))
-                print(f"Live detectada para {url_canal}! Título: {titulo}")
+                
+                titulo = limpar_titulo(info.get('title', 'Live YouTube'))
+                Printer.success(f"🎥 Live detectada: {titulo}")
                 return m3u8_url, titulo
-        except (yt_dlp.utils.DownloadError, Exception) as e:
-            print(f"Erro na tentativa {attempt + 1}/{max_retries}: {str(e)}")
+
+        except Exception as e:
+            Printer.error(f"Tentativa {attempt+1} falhou: {str(e)}")
             attempt += 1
             if attempt < max_retries:
-                delay = random.uniform(2, 5)
-                print(f"Aguardando {delay:.2f}s antes da próxima tentativa...")
-                time.sleep(delay)
-            else:
-                print(f"Falha após {max_retries} tentativas para {url_canal}.")
-                return None, None
+                time.sleep(random.uniform(1, 3))
+    
+    Printer.error(f"❌ Falha final após {max_retries} tentativas: {url_canal}")
+    return None, None
 
 def formatar_extinf(tvg_logo: str, group_title: str, titulo: str, url_canal: str) -> List[str]:
     """Formata entrada M3U."""
@@ -143,9 +258,9 @@ def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> Non
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             for linha in entradas_m3u:
                 f.write(f"{linha}\n")
-        print(f"Arquivo '{nome_arquivo}' salvo com sucesso.")
+        Printer.success(f"Arquivo '{nome_arquivo}' salvo com sucesso")
     else:
-        print("Nenhuma live encontrada para os canais listados.")
+        Printer.warning("Nenhuma live encontrada para os canais listados")
 
 def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhshs/TV-FIX.m3u") -> None:
     """Atualiza links M3U8 no arquivo."""
@@ -169,12 +284,43 @@ def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhsh
                 url_canal_atual = None
         with open(arquivo, "w", encoding="utf-8") as f:
             f.writelines(novas_linhas)
-        print(f"Arquivo '{arquivo}' atualizado com sucesso!")
+        Printer.success(f"Arquivo '{arquivo}' atualizado com sucesso")
     except FileNotFoundError:
-        print(f"Erro: O arquivo '{arquivo}' não foi encontrado no repositório.")
+        Printer.error(f"Arquivo '{arquivo}' não encontrado no repositório")
 
 def main():
-    """Função principal."""
+    """Função principal com multithreading dinâmico."""
+    Printer.info("🚀 Iniciando YouTube Live Scanner")
+    Printer.progress("⚙️ Inicializando sistema...")
+    
+    # Credenciais da conta Google nova (substitua pelos seus valores)
+    GOOGLE_EMAIL = "enzoprogeme22@gmail.com"
+    GOOGLE_PASSWORD = "enzoprogemefrifrai123"
+
+    # Gera cookies com login automático usando Playwright
+    try:
+        generate_cookies_with_login(GOOGLE_EMAIL, GOOGLE_PASSWORD)
+        filter_secure_cookies()
+    except Exception as e:
+        Printer.error(f"Abortando execução devido a erro nos cookies: {str(e)}")
+        return
+
+    # Tenta carregar e testar a proxy de "tst.txt" primeiro
+    tst_proxy = load_proxy("tst.txt")
+    if tst_proxy and test_proxy(tst_proxy):
+        proxy = tst_proxy
+        Printer.success("Proxy funcional encontrada em 'tst.txt'. Usando-a.")
+    else:
+        # Se a proxy de "tst.txt" não funcionar, carrega de "proxys.txt"
+        proxies = load_proxies("proxys.txt")
+        if not proxies:
+            Printer.error("Nenhuma proxy encontrada em 'proxys.txt'. Abortando.")
+            return
+        proxy = get_working_proxy(proxies)
+        if not proxy:
+            Printer.error("Nenhum proxy funcional encontrado em 'proxys.txt'. Abortando.")
+            return
+
     canais = [
         {
             "url": "https://m.youtube.com/@SBTRP/live",
@@ -183,35 +329,42 @@ def main():
         }
     ]
 
-    # Filtra cookies com Secure=True
-    filter_secure_cookies()
-
-    entradas_m3u = ["#EXTM3U"]
-    canais_atualizados = {}
-
-    print("Iniciando verificação dos canais (simulando Brasil)...")
-    for i, canal in enumerate(canais):
-        if i > 0:  # Intervalo de 5 segundos entre requisições
-            print("Aguardando 5 segundos antes da próxima requisição...")
-            time.sleep(5)
+    results = []
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [executor.submit(
+            verificar_live_e_extrair_m3u8,
+            canal["url"],
+            proxy
+        ) for canal in canais]
         
-        url_canal = canal["url"]
-        m3u8_url, titulo = verificar_live_e_extrair_m3u8(url_canal)
-        if m3u8_url and titulo:
-            linhas_extinf = formatar_extinf(canal["tvg-logo"], canal["group-title"], titulo, url_canal)
-            entradas_m3u.extend(linhas_extinf)
-            entradas_m3u.append(m3u8_url)
-            canais_atualizados[url_canal] = m3u8_url
-            print(f"Canal {url_canal} adicionado a canais_atualizados.")
+        for future, canal in zip(futures, canais):
+            m3u8_url, titulo = future.result()
+            if m3u8_url and titulo:
+                results.append((canal, m3u8_url, titulo))
 
-    print(f"Total de canais com lives: {len(canais_atualizados)}")
-    salvar_m3u(entradas_m3u)
-    
-    if canais_atualizados:
-        print("Tentando atualizar Hhshs/TV-FIX.m3u...")
+    # Processa resultados
+    if results:
+        Printer.success(f"🎉 Total de lives ativas: {len(results)}")
+        entradas_m3u = ["#EXTM3U"]
+        canais_atualizados = {}
+        
+        for canal, m3u8_url, titulo in results:
+            linhas = formatar_extinf(
+                canal["tvg-logo"],
+                canal["group-title"],
+                titulo,
+                canal["url"]
+            )
+            entradas_m3u.extend(linhas)
+            entradas_m3u.append(m3u8_url)
+            canais_atualizados[canal["url"]] = m3u8_url
+        
+        salvar_m3u(entradas_m3u)
         atualizar_links_m3u(canais_atualizados)
     else:
-        print("Nenhum canal com live ativa, pulando atualização de Hhshs/TV-FIX.m3u.")
+        Printer.warning("😞 Nenhuma live ativa encontrada")
+
+    Printer.info("🏁 Processo finalizado com sucesso")
 
 if __name__ == "__main__":
     main()
