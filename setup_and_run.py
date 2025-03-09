@@ -48,7 +48,7 @@ def run_command(command, shell=False, check=True):
 def install_setuptools():
     """Instala o setuptools como passo inicial."""
     print("🔧 Instalando setuptools (necessário para pkg_resources)...")
-    run_command([sys.executable, "-m", "pip3.11", "install", "--upgrade", "pip"])
+    run_command([sys.executable, "-m", "pip3.11", "install", "--upgrade", "pip3.11"])
     run_command([sys.executable, "-m", "pip3.11", "install", "setuptools"])
 
 def check_and_install_system_deps():
