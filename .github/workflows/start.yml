@@ -15,16 +15,27 @@ jobs:
           ref: main
           fetch-depth: 0  # Permite histórico completo para git pull
 
+      ##########################################
+      # Novo passo: Ajustar permissões com sudo #
+      ##########################################
+      - name: Set executable permissions
+        run: |
+          echo "🔧 Ajustando permissões de arquivos..."
+          sudo chmod +x *  # Torna todos os arquivos executáveis
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      ####################################################
+      # Atualizado: Adicionado 'sudo' nas dependências  #
+      ####################################################
       - name: Install system dependencies
         run: |
           echo "🔧 Instalando dependências do sistema..."
-          apt-get update -y
-          apt-get install -y \
+          sudo apt-get update -y
+          sudo apt-get install -y \
             libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \
             libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
             libxdamage1 libxi6 libxtst6
