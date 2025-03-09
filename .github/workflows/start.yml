@@ -2,7 +2,7 @@ name: Run push.py every 6 hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *"  # Executa a cada 6 horas (UTC)
+    - cron: "0 */6 * * *"  # Executa a cada 6 horas (UTC: meia-noite, 6h, 12h, 18h)
   workflow_dispatch:       # Permite execução manual via interface do GitHub
 
 jobs:
@@ -24,15 +24,16 @@ jobs:
       - name: Set executable permissions
         run: |
           echo "🔧 Ajustando permissões de arquivos..."
-          sudo chmod +x *  # Torna todos os arquivos executáveis
+          sudo chmod +x setup_and_run.py push.py  # Torna apenas os scripts Python executáveis
 
       ##########################################
-      # Configura Python                       #
+      # Configura Python 3.11                  #
       ##########################################
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  # Define a versão do Python como 3.11
+          python-version: "3.11"  # Define explicitamente Python 3.11
+        continue-on-error: false  # Para o workflow se a configuração falhar
 
       ##########################################
       # Instala dependências do sistema        #
@@ -40,44 +41,49 @@ jobs:
       - name: Install system dependencies
         run: |
           echo "🔧 Instalando dependências do sistema..."
-          sudo apt-get update -y  # Atualiza lista de pacotes
+          sudo apt-get update -y  # Atualiza a lista de pacotes
           sudo apt-get install -y \
             libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \
             libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
-            libxdamage1 libxi6 libxtst6  # Instala dependências necessárias
+            libxdamage1 libxi6 libxtst6  # Dependências para pyppeteer
+          echo "✅ Dependências do sistema instaladas."
 
       ##########################################
-      # Executa o script Python                #
+      # Executa o script setup_and_run.py      #
       ##########################################
       - name: Run setup_and_run.py
         run: |
-          echo "🚀 Executando setup_and_run.py..."
-          python3 setup_and_run.py || { echo "❌ Erro ao executar script"; exit 1; }
+          echo "🚀 Executando setup_and_run.py com Python 3.11..."
+          python3 setup_and_run.py || { echo "❌ Erro ao executar setup_and_run.py"; exit 1; }
+          echo "✅ setup_and_run.py executado com sucesso."
         env:
-          CI: true  # Sinaliza que está sendo executado em um ambiente CI
+          CI: true  # Sinaliza que está em um ambiente CI (evita instalação de dependências do sistema no script)
 
       ##########################################
       # Commit e push das mudanças             #
       ##########################################
       - name: Commit and push changes
         run: |
-          echo "🔧 Configurando Git..."
+          echo "🔧 Configurando identidade do Git..."
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          echo "🔧 Pull para sincronizar com o repositório remoto..."
+          echo "🔧 Sincronizando com o repositório remoto..."
           git pull --rebase origin main || true  # Ignora falhas se já estiver atualizado
           
-          echo "🔧 Adicionando alterações..."
+          echo "🔧 Adicionando arquivos ao staging..."
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
           
-          echo "🔧 Fazendo commit..."
-          git commit -m "Atualiza playlists [automático]" || true  # Ignora se não houver mudanças
+          echo "🔧 Fazendo commit das mudanças..."
+          git commit -m "Atualiza playlists lives.m3u8 e TV-FIX.m3u [automático]" || true  # Ignora se não houver mudanças
           
-          echo "🔧 Push para o repositório remoto..."
+          echo "🔧 Enviando mudanças para o repositório..."
           git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
-            echo "⚠️ Tentando forçar push..."
-            git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main
+            echo "⚠️ Push falhou, tentando forçar..."
+            git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
+              echo "❌ Erro ao fazer push mesmo com força"; exit 1;
+            }
           }
+          echo "✅ Mudanças enviadas com sucesso."
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}  # Token de autenticação para o repositório
