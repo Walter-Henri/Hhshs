@@ -48,8 +48,8 @@ def run_command(command, shell=False, check=True):
 def install_setuptools():
     """Instala o setuptools como passo inicial."""
     print("🔧 Instalando setuptools (necessário para pkg_resources)...")
-    run_command([sys.executable, "-m", "pip3.11", "install", "--upgrade", "pip3.11"])
-    run_command([sys.executable, "-m", "pip3.11", "install", "setuptools"])
+    run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+    run_command([sys.executable, "-m", "pip", "install", "setuptools"])
 
 def check_and_install_system_deps():
     """Verifica e instala dependências do sistema (apenas em Linux)."""
@@ -81,7 +81,7 @@ def check_and_install_python_deps():
     
     if missing:
         print(f"ℹ️ Instalando pacotes ausentes: {missing}")
-        run_command([sys.executable, "-m", "pip3.11", "install"] + missing)
+        run_command([sys.executable, "-m", "pip", "install"] + missing)
     else:
         print("✅ Todas as bibliotecas Python já estão instaladas.")
     
