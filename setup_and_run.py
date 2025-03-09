@@ -1,12 +1,10 @@
 import subprocess
 import sys
-import pkg_resources
 import os
 import platform
 
-# Lista de bibliotecas Python necessárias
+# Lista de bibliotecas Python necessárias (excluindo setuptools, que será instalado separadamente)
 REQUIRED_PACKAGES = [
-    "setuptools",  # Adicionado para garantir que pkg_resources esteja disponível
     "yt_dlp",
     "requests",
     "pyppeteer",
@@ -39,6 +37,12 @@ def run_command(command, shell=False):
         print(f"❌ Erro ao executar {' '.join(command if not shell else [command])}: {e.stderr}")
         sys.exit(1)
 
+def install_setuptools():
+    """Instala o setuptools como passo inicial."""
+    print("🔧 Instalando setuptools (necessário para pkg_resources)...")
+    run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+    run_command([sys.executable, "-m", "pip", "install", "setuptools"])
+
 def check_and_install_system_deps():
     """Verifica e instala dependências do sistema (apenas em Linux)."""
     if platform.system() != "Linux":
@@ -46,27 +50,20 @@ def check_and_install_system_deps():
         return
 
     print("🔧 Verificando e instalando dependências do sistema...")
-    # Verifica se 'apt-get' está disponível (Ubuntu/GitHub Actions)
     try:
         run_command(["apt-get", "--version"])
     except subprocess.CalledProcessError:
-        print("⚠️ 'apt-get' não encontrado. Pulando dependências do sistema (pode ser necessário instalar manualmente).")
+        print("⚠️ 'apt-get' não encontrado. Pulando dependências do sistema.")
         return
 
-    # Atualiza o índice de pacotes
     run_command(["sudo", "apt-get", "update", "-y"])
-    
-    # Instala dependências do sistema
     run_command(["sudo", "apt-get", "install", "-y"] + SYSTEM_DEPENDENCIES)
 
 def check_and_install_python_deps():
     """Verifica e instala bibliotecas Python necessárias."""
+    import pkg_resources  # Importado aqui, após setuptools estar garantido
+    
     print("🔧 Verificando e instalando bibliotecas Python...")
-    
-    # Atualiza o pip
-    run_command([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
-    
-    # Verifica quais pacotes já estão instalados
     installed = {pkg.key for pkg in pkg_resources.working_set}
     missing = [pkg for pkg in REQUIRED_PACKAGES if pkg.replace("_", "-") not in installed]
     
@@ -76,12 +73,13 @@ def check_and_install_python_deps():
     else:
         print("✅ Todas as bibliotecas Python já estão instaladas.")
     
-    # Instala o Chromium para pyppeteer
     print("🔧 Baixando Chromium para pyppeteer...")
     run_command([sys.executable, "-m", "pyppeteer.install"])
 
 def verify_installation():
     """Verifica se todas as bibliotecas estão instaladas."""
+    import pkg_resources  # Importado aqui, após setuptools estar garantido
+    
     print("🔍 Verificando instalação...")
     installed = {pkg.key for pkg in pkg_resources.working_set}
     for pkg in REQUIRED_PACKAGES:
@@ -103,16 +101,13 @@ def run_push_py():
 def main():
     print("🚀 Iniciando configuração e execução...")
     
-    # Instala dependências do sistema (se Linux)
+    # Instala setuptools primeiro
+    install_setuptools()
+    
+    # Agora é seguro importar pkg_resources nas funções seguintes
     check_and_install_system_deps()
-    
-    # Instala bibliotecas Python
     check_and_install_python_deps()
-    
-    # Verifica a instalação
     verify_installation()
-    
-    # Executa push.py
     run_push_py()
     
     print("🏁 Processo concluído com sucesso!")
