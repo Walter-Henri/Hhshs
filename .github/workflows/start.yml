@@ -30,8 +30,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"  # Configura Python 3 (versão mais recente disponível)
+          python-version: "3.10"  # Especifica uma versão exata do Python
         continue-on-error: false  # Garante que falhas aqui parem o workflow
+
+      - name: Install system dependencies
+        run: |
+          echo "Instalando dependências do sistema..."
+          sudo apt-get update -y
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 || true
+          echo "Dependências do sistema instaladas (ou tentativa falhou, mas continuando)."
 
       - name: Run setup_and_run.py
         run: |
