@@ -6,6 +6,7 @@ import platform
 
 # Lista de bibliotecas Python necessárias
 REQUIRED_PACKAGES = [
+    "setuptools",  # Adicionado para garantir que pkg_resources esteja disponível
     "yt_dlp",
     "requests",
     "pyppeteer",
