@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"  # Especifica uma versão exata do Python
+          python-version: "3.11"  # Especifica uma versão exata do Python
         continue-on-error: false  # Garante que falhas aqui parem o workflow
 
       - name: Install system dependencies
