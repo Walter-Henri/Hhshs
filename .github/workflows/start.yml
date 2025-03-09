@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip  # Atualiza pip para a versão mais recente
-          pip install yt-dlp requests  # Instala yt-dlp e requests (necessário para testar proxies)
+          pip install yt-dlp requests playwright  # Instala yt-dlp e requests (necessário para testar proxies)
 
       - name: Add cookies file
         run: echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
