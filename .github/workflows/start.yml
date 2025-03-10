@@ -19,12 +19,13 @@ jobs:
           fetch-depth: 0     # Baixa todo o histórico para permitir git pull e commits
 
       ##########################################
-      # Ajusta permissões dos arquivos         #
+      # Ajusta permissões do push.py           #
       ##########################################
       - name: Set executable permissions
         run: |
-          echo "🔧 Ajustando permissões de arquivos..."
-          sudo chmod +x setup_and_run.py push.py  # Torna apenas os scripts Python executáveis
+          echo "🔧 Ajustando permissões do push.py..."
+          sudo chmod +x push.py || { echo "❌ Erro: push.py não encontrado!"; exit 1; }
+          echo "✅ Permissões ajustadas com sucesso."
 
       ##########################################
       # Configura Python 3.11                  #
@@ -40,24 +41,35 @@ jobs:
       ##########################################
       - name: Install system dependencies
         run: |
-          echo "🔧 Instalando dependências do sistema..."
-          sudo apt-get update -y  # Atualiza a lista de pacotes
-          sudo apt-get install -y \
-            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \ yt-dlp \
-            libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
-            libxdamage1 libxi6 libxtst6  # Dependências para pyppeteer
-          echo "✅ Dependências do sistema instaladas."
+          echo "🔧 Atualizando lista de pacotes do sistema..."
+          sudo apt-get update -y || { echo "❌ Falha ao atualizar pacotes!"; exit 1; }
+          
+          echo "🔧 Instalando ffmpeg..."
+          sudo apt-get install -y ffmpeg || { echo "❌ Falha ao instalar ffmpeg!"; exit 1; }
+          
+          echo "✅ Dependências do sistema instaladas com sucesso!"
 
       ##########################################
-      # Executa o script setup_and_run.py      #
+      # Instala dependências Python            #
       ##########################################
-      - name: Run setup_and_run.py
+      - name: Install Python dependencies
         run: |
-          echo "🚀 Executando setup_and_run.py com Python 3.11..."
-          python3 push.py || { echo "❌ Erro ao executar setup_and_run.py"; exit 1; }
-          echo "✅ setup_and_run.py executado com sucesso."
-        env:
-          CI: true  # Sinaliza que está em um ambiente CI
+          echo "🔧 Atualizando pip para Python 3.11..."
+          python3 -m pip install --upgrade pip || { echo "❌ Falha ao atualizar pip!"; exit 1; }
+          
+          echo "🔧 Instalando yt-dlp>=2025.02.19..."
+          python3 -m pip install "yt-dlp>=2025.02.19" || { echo "❌ Falha ao instalar yt-dlp!"; exit 1; }
+          
+          echo "✅ Dependências Python instaladas com sucesso!"
+
+      ##########################################
+      # Executa o script push.py               #
+      ##########################################
+      - name: Run push.py
+        run: |
+          echo "🚀 Executando push.py com Python 3.11..."
+          python3 push.py || { echo "❌ Erro ao executar push.py!"; exit 1; }
+          echo "✅ push.py executado com sucesso!"
 
       ##########################################
       # Commit e push das mudanças             #
@@ -74,16 +86,21 @@ jobs:
           echo "🔧 Adicionando arquivos ao staging..."
           git add lives.m3u8 Hhshs/TV-FIX.m3u || true  # Ignora se os arquivos não existirem
           
-          echo "🔧 Fazendo commit das mudanças..."
-          git commit -m "Atualiza playlists lives.m3u8 e TV-FIX.m3u [automático]" || true  # Ignora se não houver mudanças
-          
-          echo "🔧 Enviando mudanças para o repositório..."
-          git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
-            echo "⚠️ Push falhou, tentando forçar..."
-            git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
-              echo "❌ Erro ao fazer push mesmo com força"; exit 1;
+          echo "🔧 Verificando mudanças para commit..."
+          if git diff --staged --quiet; then
+            echo "ℹ️ Nenhuma mudança para commitar."
+          else
+            echo "🔧 Fazendo commit das mudanças..."
+            git commit -m "Atualiza playlists lives.m3u8 e TV-FIX.m3u [automático]" || { echo "❌ Erro ao fazer commit!"; exit 1; }
+            
+            echo "🔧 Enviando mudanças para o repositório..."
+            git push https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
+              echo "⚠️ Push falhou, tentando forçar..."
+              git push --force https://${{ secrets.REPO_TOKEN }}@github.com/Walter-Henri/Hhshs.git HEAD:main || {
+                echo "❌ Erro ao fazer push mesmo com força!"; exit 1;
+              }
             }
-          }
-          echo "✅ Mudanças enviadas com sucesso."
+            echo "✅ Mudanças enviadas com sucesso!"
+          fi
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}  # Token de autenticação para o repositório
