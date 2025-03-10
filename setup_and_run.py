@@ -6,7 +6,7 @@ import importlib.metadata
 # Lista de bibliotecas Python necessárias para o script principal (compatíveis com Python 3.11)
 # Inclui módulos padrão e externos
 REQUIRED_PACKAGES = [
-    "yt-dlp>=2023.10.13",  # Pacote externo para streams do YouTube
+    "yt-dlp>=2025.02.19",  # Pacote externo para streams do YouTube, versão mais recente até março de 2025
     "subprocess",          # Padrão: execução de comandos (placeholder, não instalável via pip)
     "re",                  # Padrão: expressões regulares
     "time",                # Padrão: manipulação de tempo
@@ -122,13 +122,23 @@ def verify_installation():
         print("❌ Erro: FFmpeg não encontrado!")
         sys.exit(1)
 
+def run_push_py():
+    """Executa push.py com Python 3.11."""
+    push_script = "push.py"
+    if not os.path.exists(push_script):
+        print(f"❌ Erro: {push_script} não encontrado no diretório atual!")
+        sys.exit(1)
+    print(f"🚀 Executando {push_script} com Python 3.11...")
+    run_command([sys.executable, push_script])
+
 def main():
     print("🚀 Iniciando configuração automática para o script principal...")
     check_python_version()
     install_python_deps()
     install_system_deps()
     verify_installation()
-    print("🏁 Configuração concluída com sucesso! Todos os módulos necessários estão prontos.")
+    run_push_py()
+    print("🏁 Configuração e execução concluídas com sucesso! Todos os módulos necessários estão prontos.")
 
 if __name__ == "__main__":
     main()
