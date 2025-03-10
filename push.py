@@ -1,226 +1,328 @@
-import yt_dlp
+import subprocess
 import re
-import random
 import time
-import threading
+import os
+import json
+import shutil
 from typing import List, Dict, Tuple, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import os
-import subprocess
+import yt_dlp
 
-# Códigos ANSI para cores
-class Colors:
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
+class Estilos:
+    VERMELHO = '\033[38;5;196m'
+    VERDE = '\033[38;5;40m'
+    AMARELO = '\033[38;5;220m'
+    CIANO = '\033[38;5;51m'
+    MAGENTA = '\033[38;5;201m'
     RESET = '\033[0m'
+    NEGRITO = '\033[1m'
+    FUNDO_VERDE = '\033[48;5;28m'
 
-# Classe para prints estilizados
-class Printer:
+class Logger:
     @staticmethod
-    def success(msg: str):
-        print(f"{Colors.GREEN}✅ [SUCESSO] {msg}{Colors.RESET}")
-
-    @staticmethod
-    def warning(msg: str):
-        print(f"{Colors.YELLOW}⚠️ [ATENÇÃO] {msg}{Colors.RESET}")
+    def cabecalho(msg: str):
+        print(f"\n{Estilos.FUNDO_VERDE}{Estilos.NEGRITO} 🌟 === {msg.upper()} === 🌟 {Estilos.RESET}")
 
     @staticmethod
-    def error(msg: str):
-        print(f"{Colors.RED}❌ [ERRO] {msg}{Colors.RESET}")
+    def sucesso(msg: str):
+        print(f"{Estilos.VERDE}  ✅  {msg:<60}{Estilos.RESET}")
 
     @staticmethod
-    def info(msg: str):
-        print(f"{Colors.CYAN}ℹ️ [INFO] {msg}{Colors.RESET}")
+    def aviso(msg: str):
+        print(f"{Estilos.AMARELO}  ⚠️  {msg:<60}{Estilos.RESET}")
 
     @staticmethod
-    def progress(msg: str):
-        print(f"{Colors.MAGENTA}⌛ [PROGRESSO] {msg}{Colors.RESET}")
+    def erro(msg: str):
+        print(f"{Estilos.VERMELHO}  ❌  {msg:<60}{Estilos.RESET}")
+
+    @staticmethod
+    def processo(msg: str):
+        print(f"{Estilos.MAGENTA}  ⏳  {msg:<60}{Estilos.RESET}")
 
     @staticmethod
     def debug(msg: str):
-        print(f"{Colors.BLUE}🐛 [DEBUG] {msg}{Colors.RESET}")
+        print(f"{Estilos.CIANO}  🛠️  {msg:<60}{Estilos.RESET}")
 
-# Lista de User-Agents
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
-    "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Edg/128.0.0.0",
-]
+    @staticmethod
+    def separador():
+        print(f"{Estilos.CIANO}✨ {'='*68} ✨{Estilos.RESET}")
 
-def get_random_headers() -> Dict[str, str]:
-    """Retorna cabeçalhos HTTP com User-Agent aleatório e Accept-Language em pt-BR."""
-    return {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Referer": "https://www.youtube.com/",
-    }
+def verificar_dependencias() -> bool:
+    Logger.cabecalho("Verificação de Dependências")
+    try:
+        result = subprocess.run(["yt-dlp", "--version"], capture_output=True, text=True, check=True)
+        Logger.sucesso(f"yt-dlp versão: {result.stdout.strip()} 🎉")
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        Logger.erro(f"yt-dlp não encontrado: {str(e)} 😞")
+        print(f"\n  📌 Instale com: {Estilos.NEGRITO}pip install yt-dlp{Estilos.RESET}\n")
+        return False
 
-def verificar_live_e_extrair_m3u8(url_canal: str, username: str, password: str, max_retries: int = 3) -> Tuple[Optional[str], Optional[str]]:
-    """Verifica live e extrai o URL M3U8 usando yt-dlp com username e password."""
-    attempt = 0
-    while attempt < max_retries:
+    try:
+        subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True, check=True)
+        Logger.sucesso("FFmpeg instalado com sucesso! 🎥")
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        Logger.erro(f"FFmpeg não encontrado: {str(e)} 😞")
+        print(f"\n  📌 Instale com: {Estilos.NEGRITO}sudo apt install ffmpeg{Estilos.RESET}\n")
+        return False
+
+    # Verificação opcional de ffplay e vlc
+    for tool in ["ffplay", "vlc"]:
         try:
-            Printer.info(f"Tentativa {attempt+1}/{max_retries} | 📡 Verificando: {url_canal}")
-            # Monta o comando yt-dlp
-            command = [
-                "yt-dlp",
-                "--username", username,
-                "--password", password,
-                "--get-url",
-                "--format", "best",
-                url_canal
-            ]
+            subprocess.run([tool, "--version"], capture_output=True, text=True, check=True)
+            Logger.sucesso(f"{tool} encontrado para testes! 🎮")
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            Logger.aviso(f"{tool} não encontrado (opcional para testes) 🤔")
+    return True
 
-            # Executa o comando e captura a saída
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
-            m3u8_url = result.stdout.strip()
+def testar_url(url: str, timeout: int = 15) -> bool:
+    try:
+        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", url, "-t", "5", "-f", "null", "-"]
+        subprocess.run(cmd, check=True, capture_output=True, timeout=timeout)
+        return True
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        Logger.debug(f"Teste de URL falhou: {str(e)} 🧪")
+        return False
+    except Exception as e:
+        Logger.erro(f"Erro inesperado ao testar URL: {str(e)} 💥")
+        return False
 
-            if not m3u8_url or "m3u8" not in m3u8_url:
-                Printer.warning(f"🔴 Live offline ou URL inválido: {url_canal}")
-                return None, None
-
-            # Extrai o título usando yt-dlp
-            ydl_opts = {
-                'quiet': True,
-                'no_warnings': True,
-                'get_title': True,
-            }
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url_canal, download=False)
-                titulo = limpar_titulo(info.get('title', 'Live YouTube')) if info else 'Live YouTube'
-
-            Printer.success(f"🎥 Live detectada: {titulo}")
-            return m3u8_url, titulo
-
-        except subprocess.CalledProcessError as e:
-            Printer.error(f"Tentativa {attempt+1} falhou: {e.stderr}")
-            attempt += 1
-            if attempt < max_retries:
-                time.sleep(random.uniform(1, 3))
-        except Exception as e:
-            Printer.error(f"Tentativa {attempt+1} falhou: {str(e)}")
-            attempt += 1
-            if attempt < max_retries:
-                time.sleep(random.uniform(1, 3))
-    
-    Printer.error(f"❌ Falha final após {max_retries} tentativas: {url_canal}")
-    return None, None
-
-def limpar_titulo(titulo: str) -> str:
-    """Remove data/hora e chaves do título."""
-    padrao_data_hora = r'\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$'
-    return re.sub(padrao_data_hora, '', titulo).strip('{}')
-
-def formatar_extinf(tvg_logo: str, group_title: str, titulo: str, url_canal: str) -> List[str]:
-    """Formata entrada M3U."""
-    return [
-        f"# Canal: {url_canal}",
-        f'#EXTINF:-1 tvg-logo="{tvg_logo}" group-title="{group_title}", {titulo}'
+def obter_stream_com_audio(url: str, tentativas: int = 3, timeout_base: int = 20) -> Tuple[Optional[str], Optional[str]]:
+    formatos_priorizados = [
+        "best[height<=1080][acodec!=none][protocol=hls]",
+        "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+        "best[acodec!=none]",
+        "best"
     ]
 
-def salvar_m3u(entradas_m3u: List[str], nome_arquivo: str = "lives.m3u8") -> None:
-    """Salva playlist M3U."""
-    if len(entradas_m3u) > 1:
-        with open(nome_arquivo, "w", encoding="utf-8") as f:
-            for linha in entradas_m3u:
-                f.write(f"{linha}\n")
-        Printer.success(f"Arquivo '{nome_arquivo}' salvo com sucesso")
-    else:
-        Printer.warning("Nenhuma live encontrada para os canais listados")
+    for tentativa in range(tentativas):
+        for formato in formatos_priorizados:
+            try:
+                Logger.processo(f"Tentativa {tentativa+1}/{tentativas} - Formato: {formato} 🔍 URL: {url}")
+                cmd_info = ["yt-dlp", "--dump-json", "--no-warnings", "--geo-bypass", "--force-ipv4", url]
+                result = subprocess.run(cmd_info, capture_output=True, text=True, check=True, timeout=timeout_base + tentativa * 5)
+                info = json.loads(result.stdout)
 
-def atualizar_links_m3u(canais_atualizados: Dict[str, str], arquivo: str = "Hhshs/TV-FIX.m3u") -> None:
-    """Atualiza links M3U8 no arquivo."""
+                Logger.debug(f"ID da live: {info.get('id')} - Ao vivo: {info.get('is_live')} 🎬")
+                if not info.get('is_live'):
+                    Logger.aviso(f"Live não está ativa no momento: {url} ⏸️")
+                    return None, limpar_titulo(info.get('title', url.split('/')[-1]))
+
+                cmd_url = [
+                    "yt-dlp", "--get-url", "--format", formato, "--no-warnings",
+                    "--geo-bypass", "--force-ipv4", "--no-cache-dir", url
+                ]
+                result_url = subprocess.run(cmd_url, capture_output=True, text=True, check=True, timeout=timeout_base)
+                stream_url = result_url.stdout.strip()
+
+                if not stream_url:
+                    raise ValueError("URL do stream vazia")
+
+                Logger.processo(f"Verificando URL: {stream_url[:50]}... 🔎")
+                if testar_url(stream_url):
+                    titulo = limpar_titulo(info.get('title', url.split('/')[-1]))
+                    Logger.sucesso(f"Stream válido encontrado: {titulo} 🎉")
+                    return stream_url, titulo
+                else:
+                    Logger.aviso(f"URL não reproduzível: {stream_url[:50]}... 🚫")
+
+            except subprocess.CalledProcessError as e:
+                erro_msg = e.stderr.strip()
+                Logger.erro(f"Erro no yt-dlp: {erro_msg[:50]}... 😵")
+                if "This live event will" in erro_msg:
+                    Logger.aviso(f"Live agendada ou encerrada: {url} ⏰")
+                    return None, limpar_titulo(url.split('/')[-1])
+            except subprocess.TimeoutExpired:
+                Logger.erro("Timeout na operação ⏱️")
+            except json.JSONDecodeError as e:
+                Logger.erro(f"Erro ao decodificar JSON: {str(e)} 📜")
+            except Exception as e:
+                Logger.erro(f"Falha crítica: {str(e)} 💥")
+        time.sleep(3)
+    
+    Logger.erro(f"Falha após {tentativas} tentativas para {url} 😢")
+    return None, url.split('/')[-1]
+
+def limpar_titulo(titulo: str, manter_info: bool = False) -> str:
+    if manter_info:
+        return titulo.strip()
+    return re.sub(
+        r'(\s*(\d{4}[-/]\d{2}[-/]\d{2}|\d{2}:\d{2})\s*)|([][{}()|])|(AO?\s?VIVO)|(LIVE)',
+        '', titulo, flags=re.IGNORECASE
+    ).strip()
+
+def criar_estrutura_pastas() -> bool:
+    estrutura = {"Hhshs": ["TV-FIX.m3u"], "logs": []}
     try:
-        with open(arquivo, "r", encoding="utf-8") as f:
-            linhas = f.readlines()
-        novas_linhas = []
-        url_canal_atual = None
-        for linha in linhas:
-            linha_stripped = linha.strip()
-            if linha_stripped.startswith("# Canal:"):
-                url_canal_atual = linha_stripped.replace("# Canal: ", "").strip()
-                novas_linhas.append(linha)
-            elif linha_stripped.startswith("#EXTINF:"):
-                novas_linhas.append(linha)
-            elif linha_stripped.startswith("https://") and url_canal_atual in canais_atualizados:
-                novas_linhas.append(canais_atualizados[url_canal_atual] + "\n")
-                url_canal_atual = None
+        uso_disco = shutil.disk_usage(".")
+        if uso_disco.free < 1024 * 1024:  # Menos de 1MB livre
+            Logger.erro("Espaço em disco insuficiente! (<1MB) 💾")
+            return False
+
+        for pasta, arquivos in estrutura.items():
+            os.makedirs(pasta, exist_ok=True)
+            for arq in arquivos:
+                caminho = os.path.join(pasta, arq)
+                if not os.path.exists(caminho):
+                    with open(caminho, 'w', encoding="utf-8") as f:
+                        f.write("#EXTM3U\n")
+        return True
+    except OSError as e:
+        Logger.erro(f"Falha ao criar estrutura: {str(e)} 📁")
+        return False
+
+def atualizar_playlist(canais_validos: List[Dict]) -> bool:
+    Logger.cabecalho("Atualizando Playlists")
+    if not criar_estrutura_pastas():
+        return False
+
+    try:
+        with open("lives.m3u8", "w", encoding="utf-8") as f:
+            f.write("#EXTM3U\n")
+            for canal in canais_validos:
+                f.write(f"# Canal: {canal['original']}\n")
+                f.write(f'#EXTINF:-1 tvg-logo="{canal["logo"]}" group-title="{canal["grupo"]}",{canal["titulo"]}\n')
+                f.write(f"{canal['url'] if canal['url'] else 'Live não ativa'}\n")
+        Logger.sucesso("Arquivo lives.m3u8 atualizado com sucesso! 📝")
+    except OSError as e:
+        Logger.erro(f"Erro ao escrever lives.m3u8: {str(e)} ⚠️")
+        return False
+
+    caminho_fixo = "Hhshs/TV-FIX.m3u"
+    try:
+        if os.path.exists(caminho_fixo):
+            with open(caminho_fixo, "r", encoding="utf-8") as f:
+                linhas = f.readlines()
+        else:
+            linhas = ["#EXTM3U\n"]
+
+        canais_dict = {canal["original"]: canal for canal in canais_validos}
+        canais_existentes = set()
+        linhas_atualizadas = ["#EXTM3U\n"]
+        linhas_restantes = []
+        url_atual = None
+        bloco_atual = []
+
+        for linha in linhas[1:]:
+            if linha.startswith("# Canal: "):
+                if bloco_atual and url_atual:
+                    if url_atual in canais_dict:
+                        linhas_atualizadas.extend(bloco_atual)
+                    else:
+                        linhas_restantes.extend(bloco_atual)
+                url_atual = linha.split("# Canal: ")[1].strip()
+                canais_existentes.add(url_atual)
+                bloco_atual = [linha]
+            elif url_atual and (linha.startswith("http") or linha.startswith("Live não ativa") or linha.startswith("URL não disponível")):
+                if url_atual in canais_dict:
+                    novo_canal = canais_dict[url_atual]
+                    bloco_atual.append(f"{novo_canal['url'] if novo_canal['url'] else 'Live não ativa'}\n")
+                    Logger.debug(f"Link atualizado para {url_atual} 🔗")
+                else:
+                    bloco_atual.append(linha)
+                if url_atual in canais_dict:
+                    linhas_atualizadas.extend(bloco_atual)
+                else:
+                    linhas_restantes.extend(bloco_atual)
+                url_atual = None
+                bloco_atual = []
             else:
-                novas_linhas.append(linha)
-                url_canal_atual = None
-        with open(arquivo, "w", encoding="utf-8") as f:
+                if bloco_atual and url_atual:
+                    if url_atual in canais_dict:
+                        linhas_atualizadas.extend(bloco_atual)
+                    else:
+                        linhas_restantes.extend(bloco_atual)
+                url_atual = None
+                bloco_atual = []
+                linhas_restantes.append(linha)
+                Logger.debug(f"Linha preservada sem alterações: {linha.strip()} 📌")
+
+        for canal in canais_validos:
+            if canal["original"] not in canais_existentes:
+                linhas_atualizadas.append(f"# Canal: {canal['original']}\n")
+                linhas_atualizadas.append(f'#EXTINF:-1 tvg-logo="{canal["logo"]}" group-title="{canal["grupo"]}",{canal["titulo"]}\n')
+                linhas_atualizadas.append(f"{canal['url'] if canal['url'] else 'Live não ativa'}\n")
+                Logger.debug(f"Canal adicionado: {canal['original']} ➕")
+
+        novas_linhas = linhas_atualizadas + linhas_restantes
+
+        with open(caminho_fixo, "w", encoding="utf-8") as f:
             f.writelines(novas_linhas)
-        Printer.success(f"Arquivo '{arquivo}' atualizado com sucesso")
-    except FileNotFoundError:
-        Printer.error(f"Arquivo '{arquivo}' não encontrado no repositório")
+        Logger.sucesso("Arquivo TV-FIX.m3u atualizado com canais no topo! 📺")
+        return True
+
+    except OSError as e:
+        Logger.erro(f"Falha ao atualizar TV-FIX.m3u: {str(e)} ⚠️")
+        return False
 
 def main():
-    """Função principal com multithreading dinâmico."""
-    Printer.info("🚀 Iniciando YouTube Live Scanner")
-    Printer.progress("⚙️ Inicializando sistema...")
-    
-    # Credenciais fixas
-    USERNAME = "enzoprogeme22@gmail.com"
-    PASSWORD = "enzoprogemefrifrai123"
+    Logger.cabecalho("YouTube Live Audio Validator")
+    if not verificar_dependencias():
+        Logger.erro("Dependências ausentes, encerrando... 😞")
+        return
 
     canais = [
         {
-            "url": "https://m.youtube.com/@SBTRP/live",
-            "tvg-logo": "https://www.sbt.com.br/assets/images/logo-sbt.webp",
-            "group-title": "🌍 TV Aberta"
+            "original": "https://www.youtube.com/@SBTRP/live",
+            "logo": "https://www.sbt.com.br/assets/images/logo-sbt.webp",
+            "grupo": "🌍 TV Aberta"
         },
         {
-            "url": "https://m.youtube.com/live/ABVQXgr2LW4",
-            "tvg-logo": "https://www.sbt.com.br/assets/images/logo-sbt.webp",
-            "group-title": "🌍 TV Aberta"
-        }    
+            "original": "https://www.youtube.com/live/ABVQXgr2LW4",
+            "logo": "https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg",
+            "grupo": "🌍 TV Aberta"
+        },
+        {
+            "original": "https://www.youtube.com/@abaleiaisis/live",
+            "logo": "https://i.imgur.com/RUKVrOH.png",
+            "grupo": "🌍 TV Aberta"
+        },
+        {
+            "original": "https://www.youtube.com/@radionovasdepazoficial/live",
+            "logo": "https://yt3.googleusercontent.com/N2qFz5sN9GWmwrQfJtzKcu6d6w-dmHqE3v3AlfUdB8Y0ikyn1XCxTlEcV-oaRLv7ASepJ0sTRAw=s900-c-k-c0x00ffffff-no-rj",
+            "grupo": "🙏 Religioso"
+        }
     ]
 
-    results = []
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(
-            verificar_live_e_extrair_m3u8,
-            canal["url"],
-            USERNAME,
-            PASSWORD
-        ) for canal in canais]
-        
-        for future, canal in zip(futures, canais):
-            m3u8_url, titulo = future.result()
-            if m3u8_url and titulo:
-                results.append((canal, m3u8_url, titulo))
+    Logger.separador()
+    Logger.cabecalho("Processando Canais")
+    resultados = []
+    max_workers = min(len(canais), 5)
 
-    # Processa resultados
-    if results:
-        Printer.success(f"🎉 Total de lives ativas: {len(results)}")
-        entradas_m3u = ["#EXTM3U"]
-        canais_atualizados = {}
-        
-        for canal, m3u8_url, titulo in results:
-            linhas = formatar_extinf(
-                canal["tvg-logo"],
-                canal["group-title"],
-                titulo,
-                canal["url"]
-            )
-            entradas_m3u.extend(linhas)
-            entradas_m3u.append(m3u8_url)
-            canais_atualizados[canal["url"]] = m3u8_url
-        
-        salvar_m3u(entradas_m3u)
-        atualizar_links_m3u(canais_atualizados)
+    try:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(obter_stream_com_audio, ch["original"]): ch for ch in canais}
+            for future in as_completed(futures):
+                canal = futures[future]
+                try:
+                    url, titulo = future.result()
+                    resultados.append({
+                        "original": canal["original"],
+                        "url": url,
+                        "titulo": titulo,
+                        "logo": canal["logo"],
+                        "grupo": canal["grupo"]
+                    })
+                except Exception as e:
+                    Logger.erro(f"Erro ao processar {canal['original']}: {str(e)} 😓")
+                Logger.separador()
+    except Exception as e:
+        Logger.erro(f"Falha no processamento paralelo: {str(e)} 💥")
+        return
+
+    if resultados:
+        if atualizar_playlist(resultados):
+            Logger.sucesso(f"Total de streams processados: {len(resultados)} 📊")
+            validos = [r for r in resultados if r['url']]
+            Logger.sucesso(f"Streams com URL válida: {len(validos)} 🌐")
+            Logger.cabecalho("Teste os Streams")
+            print(f"  {Estilos.VERDE}🎮 Comando para testar:{Estilos.RESET}")
+            url_teste = next((r['url'] for r in resultados if r['url']), "Nenhuma URL disponível")
+            print(f"  {Estilos.NEGRITO}ffplay -autoexit {url_teste}{Estilos.RESET}")
+            print(f"  {Estilos.NEGRITO}vlc {url_teste}{Estilos.RESET}")
     else:
-        Printer.warning("😞 Nenhuma live ativa encontrada")
+        Logger.aviso("Nenhum stream processado 😕")
 
-    Printer.info("🏁 Processo finalizado com sucesso")
+    Logger.cabecalho("Processo Finalizado")
 
 if __name__ == "__main__":
     main()
