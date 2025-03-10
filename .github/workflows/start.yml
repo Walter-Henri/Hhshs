@@ -43,7 +43,7 @@ jobs:
           echo "🔧 Instalando dependências do sistema..."
           sudo apt-get update -y  # Atualiza a lista de pacotes
           sudo apt-get install -y \
-            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 \ yt-dlp \
             libasound2t64 libx11-xcb1 libxcomposite1 libxcursor1 \
             libxdamage1 libxi6 libxtst6  # Dependências para pyppeteer
           echo "✅ Dependências do sistema instaladas."
