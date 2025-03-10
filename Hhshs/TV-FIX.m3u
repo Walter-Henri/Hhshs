@@ -1,10 +1,5 @@
 #EXTM3U
-# Canal: https://www.youtube.com/@abaleiaisis/live
-# Canal: https://www.youtube.com/live/ABVQXgr2LW4
-# Canal: https://www.youtube.com/@radionovasdepazoficial/live
-# Canal: https://www.youtube.com/@SBTRP/live
-#EXTINF:-1 tvg-logo="https://i.imgur.com/RUKVrOH.png" group-title="🌍 TV Aberta",
-Live não ativa
+
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT
 https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1741598310/ei/BlrOZ8PfCaS7-LAPzbXXgAI/ip/170.81.178.134/id/ABVQXgr2LW4.7/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/rqh/1/hls_chunk_host/rr3---sn-oxujvhcg-gxje.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/playlist_duration/30/manifest_duration/30/gcr/br/bui/AUWDL3zFHirbXnTZMbGhHEfMO7db8nTuCHej3tmC-pol8cqjmMuGmJ8EryeSSTOtz9aonMXWS5_5-mVn/spc/RjZbSSiA5luTwPHEiMPfqo0V99gr7a-YqQRe5PB82v5gPsxpliM8wyDfRZ_qxAIutN7KeOA/vprv/1/playlist_type/DVR/initcwndbps/1805000/met/1741576712,/mh/mT/mm/44/mn/sn-oxujvhcg-gxje/ms/lva/mv/m/mvi/3/pl/25/rms/lva,lva/dover/11/pacing/0/keepalive/yes/fexp/51326932,51355912,51387515,51411872/mt/1741576348/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,rqh,xpc,playlist_duration,manifest_duration,gcr,bui,spc,vprv,playlist_type/sig/AJfQdSswRAIgY-bOHAXPlrtrRLRDc09l9UlZd1sLdEtsuCi4bj7qrM8CIGy384YdB0X4DGqrG6I8FpzjsI30v5YWXx6ZaFd-vV_6/lsparams/hls_chunk_host,initcwndbps,met,mh,mm,mn,ms,mv,mvi,pl,rms/lsig/AFVRHeAwRQIgVBS4dLuxXjn2S6dZ7louvMVK30igFn_-lldk2p5d-g4CIQDrqyXs7js5Ebk0EDWBLEwzCdiLqbKxvvTI0loHT-KhRg%3D%3D/playlist/index.m3u8
 #EXTINF:-1 tvg-logo="https://yt3.googleusercontent.com/N2qFz5sN9GWmwrQfJtzKcu6d6w-dmHqE3v3AlfUdB8Y0ikyn1XCxTlEcV-oaRLv7ASepJ0sTRAw=s900-c-k-c0x00ffffff-no-rj" group-title="🙏 Religioso",RÁDIO NOVAS DE PAZ
