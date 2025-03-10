@@ -1,7 +1,13 @@
 #EXTM3U
-# Canal: https://m.youtube.com/@SBTRP/live
-#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta", SBT RP - AO VIVO - 24 HORAS
-https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1741490360/ei/WLTMZ8uHJNDG-LAP1JipCA/ip/2804:170:4918:c500:9892:14c9:deca:56b3/id/cGMMA8CU9Do.1/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/rqh/1/hls_chunk_host/rr3---sn-oxujvhcg-gxje.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/playlist_duration/30/manifest_duration/30/bui/AUWDL3yjMnhNd-028QmnOD7QA6Ttm_LaHt0-QJ9HMwVyrppYavToopsPgFJSS9Le0iIsuGI-01Kb9zEE/spc/RjZbSaajuMJrspFxEca3_x-BlYQtHGzSrFaJiscw9zYNEGmcm5hR9I_bf42QT0Y/vprv/1/playlist_type/DVR/initcwndbps/1946250/met/1741468762,/mh/gh/mm/44/mn/sn-oxujvhcg-gxje/ms/lva/mv/m/mvi/3/pl/40/rms/lva,lva/dover/11/pacing/0/keepalive/yes/fexp/51326932,51355912,51411872/mt/1741468349/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,rqh,xpc,playlist_duration,manifest_duration,bui,spc,vprv,playlist_type/sig/AJfQdSswRQIhAOMWiiDTa7ScW3DtPmwnsR9oYr2DQ9B-wHCx-4t1XZZeAiBSH1JykfK_qI57hdrlLmqMMUlanIwpTxEO8FpckqdhSg%3D%3D/lsparams/hls_chunk_host,initcwndbps,met,mh,mm,mn,ms,mv,mvi,pl,rms/lsig/AFVRHeAwRQIhAIkgnirhu-Y0rhzJkPWimUZVoodKxvP0u-tTdjHAR6fsAiBLBpA7aibsYYFHyHmqRQ4w0P5IHYhy7LNhcvekQNSaoA%3D%3D/playlist/index.m3u8
-# Canal: https://m.youtube.com/live/ABVQXgr2LW4
-#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta", SBT Ao Vivo
-https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1741490362/ei/WrTMZ9fkOZSdobIPybmF0Qc/ip/2804:170:4918:c500:9892:14c9:deca:56b3/id/ABVQXgr2LW4.7/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/rqh/1/hls_chunk_host/rr3---sn-oxujvhcg-gxje.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/playlist_duration/30/manifest_duration/30/gcr/br/bui/AUWDL3xMdjVU0zIuS6ggbVGM661-aRc3-MUojbItrj4jnr4hgVIVdVxgCYJh9iVftWmzUyT-El4hV3Ej/spc/RjZbSZ-vSjlQyYCGQ7PTKm5Lw_5ZNcZXn5K-6TtCqmJCtQK83toxN1W5LEX0lNPMjmKMQhs/vprv/1/playlist_type/DVR/initcwndbps/1946250/met/1741468764,/mh/mT/mm/44/mn/sn-oxujvhcg-gxje/ms/lva/mv/m/mvi/3/pl/40/rms/lva,lva/dover/11/pacing/0/keepalive/yes/fexp/51326932,51355912,51411872/mt/1741468349/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,rqh,xpc,playlist_duration,manifest_duration,gcr,bui,spc,vprv,playlist_type/sig/AJfQdSswRAIgOdNxApVm0aseNIKDCj_ONH_yvoKv-nUg3CAkBC_2JqwCIB2O909KN0WpaPGi2XKcV0QeHNv7MDT72WzmJtmUB2HX/lsparams/hls_chunk_host,initcwndbps,met,mh,mm,mn,ms,mv,mvi,pl,rms/lsig/AFVRHeAwRAIgAurKsQtagFRQWxkZJEbz4ZUyplf0FbEPS0CoeaAjTsQCIHsZxpJLChEdt9MdrF96NxSd1PP_-02z3tCw_UAP3iM9/playlist/index.m3u8
+# Canal: https://www.youtube.com/live/ABVQXgr2LW4
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",ABVQXgr2LW4
+Live não ativa
+# Canal: https://www.youtube.com/@radionovasdepazoficial/live
+#EXTINF:-1 tvg-logo="https://yt3.googleusercontent.com/N2qFz5sN9GWmwrQfJtzKcu6d6w-dmHqE3v3AlfUdB8Y0ikyn1XCxTlEcV-oaRLv7ASepJ0sTRAw=s900-c-k-c0x00ffffff-no-rj" group-title="🙏 Religioso",live
+Live não ativa
+# Canal: https://www.youtube.com/@abaleiaisis/live
+#EXTINF:-1 tvg-logo="https://i.imgur.com/RUKVrOH.png" group-title="🌍 TV Aberta",live
+Live não ativa
+# Canal: https://www.youtube.com/@SBTRP/live
+#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",live
+Live não ativa
