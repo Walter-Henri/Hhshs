@@ -1,7 +1,4 @@
 #EXTM3U
-# Canal: https://www.youtube.com/live/ABVQXgr2LW4
-# Canal: https://www.youtube.com/@radionovasdepazoficial/live
-# Canal: https://www.youtube.com/@SBTRP/live
 
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT
 https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1741664872/ei/CF7PZ-31K9mU-LAPp569EQ/ip/170.81.178.134/id/ABVQXgr2LW4.7/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/rqh/1/hls_chunk_host/rr3---sn-oxujvhcg-gxje.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/playlist_duration/30/manifest_duration/30/gcr/br/bui/AUWDL3w0OPOeVeLuVCm1kwrH5iBnZ88KvI3ZnsaxCZ0m2yz00ZkQshmJ4Pqgq0ntvfhW8PbgYSR5HM-q/spc/RjZbSdAmIhSL7sAhoJKgumunt23OqKSvySKUqPEPTHG0dln5GxX5JSyVdnV_HCJttkMzUcs/vprv/1/playlist_type/DVR/initcwndbps/2168750/met/1741643275,/mh/mT/mm/44/mn/sn-oxujvhcg-gxje/ms/lva/mv/m/mvi/3/pl/25/rms/lva,lva/dover/11/pacing/0/keepalive/yes/fexp/51326932,51355912,51387515,51411872/mt/1741642597/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,rqh,xpc,playlist_duration,manifest_duration,gcr,bui,spc,vprv,playlist_type/sig/AJfQdSswRAIgS23e29WF5GeDdOdg-_wRWykpfppBFeg72xfqRxCL5zACIEtpWv9ImYby-hLd-BU5a5AmfnAfEN5yRXRPcemUzs0_/lsparams/hls_chunk_host,initcwndbps,met,mh,mm,mn,ms,mv,mvi,pl,rms/lsig/AFVRHeAwRQIhAMvzgrUwjTWKhIfjnvlPKhaAUI_MinXXdKDu8xlW0VBJAiA4Bi6d6YcoY818pKBlA2nmMJugwalA0IWvjhoIeOOCzw%3D%3D/playlist/index.m3u8
