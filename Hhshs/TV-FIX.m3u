@@ -1,9 +1,9 @@
 #EXTM3U
 # Canal: https://www.youtube.com/live/ABVQXgr2LW4
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT Alternativo - 2K
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT Alternativo - FHD
 Live não ativa
 # Canal: https://www.youtube.com/live/ABVQXgr2LW4
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT Alternativo - FHD
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT Alternativo - 2K
 Live não ativa
 # Canal: https://www.youtube.com/live/ABVQXgr2LW4
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/9/98/SBT_logo.svg" group-title="🌍 TV Aberta",SBT Alternativo - HD
@@ -11,57 +11,57 @@ Live não ativa
 # Canal: https://youtube.com/@oviniciusleme/live
 #EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkk8Uyw3gHVsf229AVTlSdlcQR_zscDc2xL55nGkmWaFK9gflcbLV9-pw&s=10" group-title="🌍 TV Aberta",GLOBO - MGTV - 2K
 Live não ativa
-# Canal: https://www.youtube.com/@SBTRP/live
-#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",SBT - HD
+# Canal: https://youtube.com/@oviniciusleme/live
+#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkk8Uyw3gHVsf229AVTlSdlcQR_zscDc2xL55nGkmWaFK9gflcbLV9-pw&s=10" group-title="🌍 TV Aberta",GLOBO - MGTV - FHD
+Live não ativa
+# Canal: https://youtube.com/@redebrasiloficial/live
+#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjFxbucfhHte4Sgo4TH4KTrp9yAaAusET-m1z7oqY7S9o7xX6TOo3st68S&s=10" group-title="🙏 Religioso",RBTV - IEADPE - 2K
 Live não ativa
 # Canal: https://youtube.com/@oviniciusleme/live
 #EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkk8Uyw3gHVsf229AVTlSdlcQR_zscDc2xL55nGkmWaFK9gflcbLV9-pw&s=10" group-title="🌍 TV Aberta",GLOBO - MGTV - HD
 Live não ativa
-# Canal: https://youtube.com/@redebrasiloficial/live
-#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjFxbucfhHte4Sgo4TH4KTrp9yAaAusET-m1z7oqY7S9o7xX6TOo3st68S&s=10" group-title="🙏 Religioso",RBTV - IEADPE - FHD
-Live não ativa
-# Canal: https://youtube.com/@oviniciusleme/live
-#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkk8Uyw3gHVsf229AVTlSdlcQR_zscDc2xL55nGkmWaFK9gflcbLV9-pw&s=10" group-title="🌍 TV Aberta",GLOBO - MGTV - FHD
+# Canal: https://www.youtube.com/@SBTRP/live
+#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",SBT - HD
 Live não ativa
 # Canal: https://youtube.com/@redebrasiloficial/live
 #EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjFxbucfhHte4Sgo4TH4KTrp9yAaAusET-m1z7oqY7S9o7xX6TOo3st68S&s=10" group-title="🙏 Religioso",RBTV - IEADPE - HD
 Live não ativa
 # Canal: https://www.youtube.com/@SBTRP/live
-#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",SBT - FHD
-Live não ativa
-# Canal: https://www.youtube.com/@SBTRP/live
 #EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",SBT - 2K
 Live não ativa
+# Canal: https://www.youtube.com/@SBTRP/live
+#EXTINF:-1 tvg-logo="https://www.sbt.com.br/assets/images/logo-sbt.webp" group-title="🌍 TV Aberta",SBT - FHD
+Live não ativa
 # Canal: https://youtube.com/@redebrasiloficial/live
-#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjFxbucfhHte4Sgo4TH4KTrp9yAaAusET-m1z7oqY7S9o7xX6TOo3st68S&s=10" group-title="🙏 Religioso",RBTV - IEADPE - 2K
+#EXTINF:-1 tvg-logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjFxbucfhHte4Sgo4TH4KTrp9yAaAusET-m1z7oqY7S9o7xX6TOo3st68S&s=10" group-title="🙏 Religioso",RBTV - IEADPE - FHD
 Live não ativa
 # Canal: https://m.twitch.tv/comoeuconhecisuamae
-#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Como Eu Conheci Sua Mãe - HD
-https://sae12.playlist.ttvnw.net/v1/playlist/CoEFojNQUWHtUNxCgKsYVW94gWCbDJe530p5KkxzoZZWNi3cXTz1_ukH3xSSjrUaS4urCU2DjPFmSncnuIKSYwrb_gezFxj9lwQeDM9u90YonmuC3qQMVsOxZ5kinc01henhXmKiF8RFRPN0hDWrqOp92vJvjHfODWgh9B3c61pUkJCka4aU-xHhIwxXBr4NQ6SVHDtmyR3OXlNLCx2bi0UYpRNkMhWrMZu9WVFoAlr37PWhTFqz5AEL2mdrzsrNejdLUJAqMZwFVdFdiUL96wTztU4gUNSb5GpWTs5AYcl7YoxBbWexvPEhNSpBqCZqzgyQ_zia5wRiGbNkQyLGLANfVdIMG4gzw2qpJJxU_y8CqN2xFrkotrGwnrJPohZtWE63NkiMO9UTzuEkNfHyotM0oBqRelv80HgSSLwyyavoQdGY6Fxwfk-QqsiiTquqeHaDCNQyu5QxRnazYp1ip0S9gVfGz2iGPJdXEQ1paGoumWjLeH3xnpfzkc9N-_Sf0Tdo84TXbyUGmQwTv2IR-QgWjwpOwdSC_GtE20GMUY2adCtRo6WIjvIKP7YlhJdwgy-ivTScztmr3Odp6fijBmSGNuocAxmZRflIDX3tbFmUU-vbVFHVlmmM8t9Jc2mgA7Viq0kkoW6zVDzpFtG8_o113hAlt67HJ_9i7OFBIfhbQsccrEYUd2fjSjBQ9Iomkg_fuJyDYQZWXxlGKVV6w3RFEigd_WLUz9dGGa8Bqcab1VQ7HYjKWHmeI0SDLTc7-1OHAYXNE1ygdM-SR9kr3zfZqpJFRXmf61xlchngGmxbDt1qZWhNXj5fNEW9Ghs9mxiJKKtcBc4ptvGEr1MpzWp-krAaDM-hHYZYf2hqx2LJGiABKgl1cy1lYXN0LTIw5As.m3u8
-# Canal: https://m.twitch.tv/comoeuconhecisuamae
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Como Eu Conheci Sua Mãe - FHD
-https://sae12.playlist.ttvnw.net/v1/playlist/CosF28aK7_t8LeHu9odojveCrHaZGhhwlE9yuaLenn_4jWTAcFXaUAEjH2Pd2htjkyz387wDi973Mzf5DfyKwIo_GWowP5B-qEWRrwG-9T4HsZBF77_Z3V5aEByVXeVD-MgVCA9Ig-IiuFogL1aWYWo9UEqwtZ1CR_n2Ainylueyd5s65ow7EhVGHjQ5ioYMGiqbGDYzyyrjCQZCkef9fPnypQyENzfUaVQAeeHQjDOembDtcQqWUYmUHNMqG8KHXA7tRZWl5EhUKa5AW1WiasvWXj6PGJ7h2otKnHyHXAHCqi0ws004vaOmE49IP28rY-Qr7-hH60nMYarLITRyrdMganeuJfqkaM8yU6XetsthQvO95Sm46CjjBfBrOS16sGO-69Hn43zWCCWjnnFOTbRv6QODbxU9m4CSTASPpfRuSLF_4cRFBrF4NoM9fO56Hf8BzoFUz5A4qwzsD7ReinAfW8m8biIZGt9isD0azVeIPVOVSVeL1v54puyv2NpYroUaibESNg0wc_gXFYKyxJ-CxNJYm2al0lKfR6rP6EOtTtmALkpDdPMUaksfMPpntob-O6WEe-svE-OfggMAZUI7tPhpFtBCunzOZX5kM8GEhvUVTm_R8jgTDyV88sHt1DikVzlayXkFQn9SwcWTtZi5qd6yA9j1oF33PntaLpYoYUYW3W3kv_tAEWwSc1GqY3iRi8nARnJIqcnWtepYmI5T73MqPp3CtG0m0qb90KMwNp5zfXAIPwkBVXIs_HLbLOn8m0OwrtQsg4KenkBJYsR9-E3yGY5qlFkcqg3i4pd0BL-nrCrN1n0RLa2AM1hJPwENTmDng87GFrfbPyibLNwoXwD-npqN1lLxmsPSGgzNW8wcqFTPnpDYBJogASoJdXMtZWFzdC0yMOQL.m3u8
+https://sae12.playlist.ttvnw.net/v1/playlist/CosFaV-T8uTzd7aLXyqRbc3FdAdZ4xoiB0b-xVNdxAN0DlGC-1PkccVO4Maw8VVsgcQV9tMTpReIGPFcyqGmv4rdgV_koOMpruZpwMeOb3mHOnChneykkFHflvIet5jAiT01aq6Qgp8veph0BZY1c4QQ1IK3JgyAFDvwyt4drodk5IuEyjUjdG9m0QV8qy4oa_WZfeCjSLVr3iqXkzP6XZX8jKVBPcrspNuegyEEHpC0NLGV3Zyrq02yTG42t-_TFXiCnq8_MsahROPuLsfjX1uDA_7_KP6BQbdvXkj6HvSFk19kpyjoKpJf49HYsuPm1C2c4yZhqllA0h3VFASb-G_WpRySgYHnfskBN4hqT0S2nEGJHjR-6UkNiQKBCAKDSREOtM8F0enAWavY-_j-jCQD0ocboEVpqU5UNvlNt5ckYiamWPx1tNHZvkfbIhlLmNGnZsVUvyLjBWMRkQoAYpY1AUQ0ZXJMdr_lbgSy90PuNbT6z-igKddsEd5XOJ5alWjgOAGC6X0rYUCeJeZTOuFjbQ2xzdQxDXmDLiMjz9yQYDMPGJiWO0_I0p0Tu377108r9McgbVQWm6ma9P3_6Sh8yE5C-NvZr1S9-uyQbK_kuuwwAzFv-1FPo3HpwSCkBtNknZ3AOWq5qWNNrenBM1XbmCtg5PDwZE-jjtD1XSbzVesDkkdMdgFPVCIoJbOUnGirmS05qqrfUJLBfgEW2SorRVCoR1N97lNxYZnPq8d81r_fmyT7eexCsIsfttp9rhRC9Ki3i2MAiC0rqip6UN-6hHozf6b5dXX7gUZYUbjYHfzRZvvfR7MM2ppI7uPCOf1M9vffoZg3lKZFCQbLcNAHhqZSuNzL15LEjEhGGgzexUWSMVXTT16ts0EgASoJdXMtZWFzdC0yMOQL.m3u8
 # Canal: https://m.twitch.tv/comoeuconhecisuamae
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Como Eu Conheci Sua Mãe - 2K
-https://sae12.playlist.ttvnw.net/v1/playlist/CosFw5LL0R13-JchxRMCoa3tJ8HDZUj3OK5T-IwpE-4uaQAbtV0GD0P6t2bX7C0ldqFXO_P3vsQyQcGLk3CBFh4HPoRdwbTW5GDykNrCmxESKJ4CigqDpt-Y096wGixKB08dpeD7iDRBzznAHq9rxIw-xzzHPzeCma9BN_AaBE8FmCr66K1DqxuMyV6T7kk8U9B1dAX48Kgz6gyf8aUWD1BK3CMeNDrN6pUGhmBV969u-u03ikC_MfpwEbtqWhj9s1D7EGwHMUt5lOSz8ErKfCIsK3tK6LDv1t4xOGwIY51_QX4SPm8xbe95hSiHtAcvZaZkm0OVZyDMxfh44_K6fKPH78yhtQitIHmgzZmVeMSA1VIdThRKaxuaKkAxsrK643TTGostfrXOXYkU00OLpoA3Xz7GgwTN5E_nrazyu_6bAnUeQ4c2Dc4pMpivfQRgkJTO0UTBF5yORjry_yeMFJ0H5cFGJ4eKVZ8PiH1apUEwYGbugNiKrmUKuP6i8QWq86R6jXuN7Q3xPwzS-omVrrbrCQ_BaHDxenlCBEUb-A7FFji9NcArvrJtkr24IOYYK2VAgKbY67HyLmUzIXRj3g2yn1S2c1Enxy2sGvlmpykAbBqYP3zHrRtFw8tjTVq2eLyTPt2F-usTSR9OxXw95ZAReBJbBGi9oZcQWoDx6KquwqsIehXMUhMYAR5bmVpO7mbW5GhQrD8hmFfNfkggbX35Zbkcf8AnEZurzjaei6ETAYLZw0smTFO1G6lgUhqb8wvHa0kTj03lh2TScF6RVIbRz-SBSmqQQkFNr_URsdieb9_A2KBKc_myutumyq-6003CZMq9A0u8SZr4Hbtp15yxclGYt1KEu2DJZnhzGgzsVDgRVkChYtybXSQgASoJdXMtZWFzdC0yMOQL.m3u8
+https://sae12.playlist.ttvnw.net/v1/playlist/CosF2z7s08R35aX0Ts2rXY7BfHou6kDCgeL6oK9Sty1RfCcD2wLG9wBTKBP-UtaZYBI6mxmkHWajfdigBw-YjSNzE2Sd2pSUxS6upxk0nAEjK4RNl5dbkSNxM-3E57_YMPLL4q-c0jJB1gCrl5S7OVXWlJUaRVdPHJ-ppmv-hwBazVl0vmVPG72qepXKKHMdLWLHj3YJcVXTdmcWxtEFPu_RjMhVqc1lHD3P2gpgIYJpAy6RRyMPEQIBRG4DjBff3LV_V2OUXfi_mYI-ZlTJm26jTMgnXwOKd2qhI9UGS_yWeSLqxgXPYANoYgD5ARbShYaGsZkrmr2VUGcDCOPut3g17KlPa-ghrpGF83fT0hekU9tnNjLdSXZ7k3Tek0gnLHbshVBioi-yU5_ejd71e2qBDEwxQhcfG0aIMfaL96v6oxvzyy8A_R6ECYszCzRYi6F9SraG_Dq5mv9V7whRM4cshHp4XbeS-Qqn-OooEHqHbXTIGhNOBZ6vTRECf0NiyWcwa4_G9TABXPqusbYlGNMl4zhQZ0wy1Q6lCRFiJWiS_gFfx-C9WIfxkogVRJ29g099sIElaxId4-sWtVEbKLUIXbBY2mH1BVluleQGpfZL4PjfhvR9uRdWiWJR22F74LJfZfKpJSi9BiS8RH1x1PJwcrjtyq2jylnhKmUCOqtiLKL1rF0CYKpA0owE5JuajVB3Tg6yQWbkbmosglTv1JLV7nJ5rrZXfjKgWNCfwzF-G7Ut3ZN3_2e1kEsheN-Hgba68eEKxNaBgEdX8i8gpw1e79KOGY4l8AWkFHwn7muUs93L-Lfm0NHeSowoply3hocAxMKjSbvfgL9dqzsJkKTSEjpXgEvjktJaa9RIGgz7w4k6HsJy--UHenogASoJdXMtZWFzdC0yMOQL.m3u8
 # Canal: https://m.twitch.tv/chaves_chapolin24h
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Chaves e Chapolin - HD
-https://sae13.playlist.ttvnw.net/v1/playlist/Cv4E9w6rdxTrvWM6a1xYjzG2CqDEQt-STVupEnI_8wH_XkPFv1tNTPD-JxnEaa54avtDcWYyizTvdZTNpLe7VGWjKlxbr816QRuxQTVixU7ZwVFGjfD6dwVKjHGESwQCqmpF1T8qfMp4XruOaUeqrIJay_EioMM1ryvohzY6eIcI77xRzGyT9lENDikzQfK3fAU4w4s9zX9Lgwu7Bhpb-DXT803econNuU6qWqTAolfGCW2K3Udl0pjvUbxd_X0QN4ymvb8KCJIf81o77jW50RVhrrOv7WYfONnUARDxbYvubPcV8YF69lYOSkP2ithGSND4QOM7RFERRrD5bKXCLprKrFdeY57opfWYWiIcAxz1-FX8_jnnAjA9ZSTOpM9Jjmnt7Il4v6NlwyZuStutBMKGZJHAof4f4JyaYDADjUMqPNGNp44E3M8LstsvNuUuGhkjAY_eBl13oJtFJDKtWqguNAFcAuss9WhupxQPpPUK5Fflqsi06R73xoRbNlHkHnfAXzpWFqJFhVcZr9OPTBJJ75hOVuUsb_1OxHi_R90a62_e4cw0-lxwBOnr-1h3xx7ae9In6paQ0aErRhHLaAD_uxj_IsKLz2gcYRIgJO0Y4dJJvFwUvnwe48wO85ATlexe6bfTJGQ44HvRheRs9kfgV0SpANLF24XH_Y2MgWvsXXkbkIhOfhlL-gF79Hsm2TKe5Ad5eefwv4mIcgZH12iLBEya6pqtab4NEoxvduYWjD0CYFLpu5nNCiU6r2uc_zn-ALiNNt6lXCnLS8_B_TGRQoV4OuyeM0e7xVhB6ed1QUPNy9R8c4oqV3l1YFBxTEsGA08vLqVmnakDG8l7ej0aDBAPh28gw1TGo8TXDiABKgl1cy1lYXN0LTIw5As.m3u8
-# Canal: https://m.twitch.tv/chaves_chapolin24h
-#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Chaves e Chapolin - 2K
-https://sae13.playlist.ttvnw.net/v1/playlist/CogFoESoHys_YoMr1QyPpCgq1WfiHLRUMIEaZG9AoiI2GpDO7nCjf0hImWxmuM6BSX65CBM94KQtZFZXW00I0sluusfGpsOn_fprJUC7smlhdlz3Ixaxth0GpI_N-hs2xurz6j-E282VDaUGKonL0CdZYGYXFPrU-j75VZnHA3IIG35sSswI2ZAR5-7R383FobnsygYnvD-faRuVLWpc6ppuSvCgAr-WDr1ZCmdfQm_WfEOHJ5omg23oLvB-qIhpWF20veGnXeB1Bs5ckOog0_k4Xuvgy95qPDt-TwAgaXF9iymn-d6u6GevaZpYb8Mjb45GwlJgefbihg-vI1TE4H28SjknabZfS-xjMSykVNu3qw574Uu1MymBSoAdMWaRxEcGivc1UZyP3NZ7m1007pBRJ5P4nqHizG83MQM9ZmkVhephHwY8vBwG5loLc_hj1GRefRmkuacuM_7Fi1BRBnv2K_jgRZNTF6z70Qp8Qe2fMbDF3ghordggp0-f7T_4N9jnLxs0BlYu2muXz7-8Hc5_4_YM55xRVo__6m8YBivHHJgkkwuswLP9_7KL_NqWgRRMDCvIbXZRMc3f_O1BOzCFfDcilCD09va26xU33XyYv8V_cAGmgY07PYfoqhd0KPDzf96_5u6iACgplEf4_qYVAZekR1isi1-5Vzlk6lRgEZzuiXRd6KbtD7KNuEXzLR3yEDTVpE3w6pLXSbzzhvxHL41gbOF77u_S-QoDB-arMcfqSifVJWUIy4LuLggESolpVeWAmeSmCvTvfzqKnP9QVTHDlpcxgc-QNwDlPSI-ltlOFBobpjKeS4WznCYILjwPTwUtthI0XzozprkpX_5H-3PQY7jeJ_2PGgw-tSQQmCnvI3yMrIYgASoJdXMtZWFzdC0yMOQL.m3u8
+https://sae13.playlist.ttvnw.net/v1/playlist/CvsEgJncKKxcqHXyXb2iJ8uaWJv9ZV966o7-dCuLN6X-we7Gq4R4RL7YvwfERkikdayHD3llSJm697PU9pPtTBwW0wXMpfD9ZQt0zBE3WbBwFPjuxi81rCqDUmB4e2sBjhKIbg_nhX9PYCag5QeXuO57sofJRHPqqjARXE59onfyW39eDVjkbM2dTGeLQ790bPCALpxG5TStKl_EuiRuYlJ2K7bMWnkRR0Y2A0wbM7HOnNTdx8n87vEcuxEQqJuRbrt5mxRYDbB7tjnoSzTHsdOA0USPTxWDVmye4drv3Q4dpq0_KMbc2QnDRVo6OcrZg8r3IWgZqXR_4gptFHud1EYnDOzuLnE2J4E_1TtrcPgrP56Fn6LQCidWLBjnU48KMsdg0KcYcUZ1ykhDzyWivSjI-kSgRWmx3iXvbNp8kTFRA6k-KStdrUGgeuoWvsfTPf-rd1RYrhF--e0HX4s76dfxgX1t04RLz0jx3XGS4KvuNh8buqV41nlqIOhfkiOzBKnFNQAFmGDrjWDetvEbZL8uFgYHxLf4-m5cpC1z801otLdRwA4moeLQ3yM9ypazvuSUD4MakcURlBuZhACrrbRpBBUd7S1gG8NYuiQxhQl4azo_6AbMQd_9tvkuoSJJc69IaVzeyzfDlkwNrmGo0pAiKtHn9aD8FIAkVdlJpQnSbpcMI15fXsAu_cMjiYimJ7oTndEylTiEdScoIMvQ_v-dbfPB9qWvfMBiig18LWcgaa421IgqUKlSZ2E23FCa0sc7A9_L3xiOwaYqyqqIgM2co7YPGKvgJsWuz_xxPCNennzWo7gdcFbfw4H5jvsS_AxBGP6ZQrCd6E77VIEaDNGlJIXh8V3njfTAVyABKgl1cy1lYXN0LTIw5As.m3u8
+# Canal: https://m.twitch.tv/comoeuconhecisuamae
+#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Como Eu Conheci Sua Mãe - HD
+https://sae12.playlist.ttvnw.net/v1/playlist/CoEFiqGFwePES0y25RVwUfy23rOJCWJJ9W0pCi_zvmodKTGSKRwHEUn3H-59RHg3s--2S1n-JV_sLF8uQbZxfyynv070gNREfURoZr8eZVqOQ7vhlYwu7-QKvWPbWxQU-ML1kG9lFhhmKRumtuOuD1jxClYkO7F6O-sXQKPPpahzDlzR47UNoTfg6rin8H4jtSVk5H52L3NuESIgxFgNVodbVKFc_5tdGqhirSdB83QYsoXj1LL67twnRDLk6NQ-IQYwXLVevyX-9fbfOni9EmzgjxYK8c2OxSauuKQoFXY7cwCIZPow5SsVQWJA2RNBGaXOm4A_56nUttP9TaM2QbweFP2LFUsN08LHR_zyj8nF6LmVP2A52FF1yaLMw3J9gSuANabf-zJlVxYTdtpFO6jYzVbI9zG4JhXJ4BE3pJe9aVE-QjZzhrAK2OM-BpvGQkTzW8Jb6sW9ZxfxSOa6pPWKv-iED1njftmVJgmdIbhfHdEG9A-C08WJDjbnxi7W_FMrWIc0HkFvdXEVX4DTa8Bm4hcTiPtWyhJA9rn6APGOGGuzfkZS1-Cv6QS1evWjCmbrmdiJ5PR_TiykGKYFMU-8JH3DMa4743Ln-SqtFZR6UmxEabVJrY43DebG5V_MojM0QovCaJzD3NLxqmgszU02SoxquFKzcTYNiaNZM7eHVzkLL3y1Rnao2ku1ZW_ap4wb-H-c3VwTDCWq3xLI9rSUixT4RKAV__7h_QKie8l8EzuhfrZ_eFdXK-eDW0QTwrqGSctwij3GJ3EkhFjmFg1J18vAt55zM0FzWw1OpH4P-Mbnmkp1fj5HUqDxayVBzVnK3Btd67q5uqpraL_RBNEx2uYaDK5GTUv5flex0c1Y9yABKgl1cy1lYXN0LTIw5As.m3u8
 # Canal: https://m.twitch.tv/chaves_chapolin24h
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Chaves e Chapolin - FHD
-https://sae13.playlist.ttvnw.net/v1/playlist/CocFvA8bKFItuo0X97bZTopODDrjo2uIZvQJfyq1m5fkTVwp-YXFTzK_AaDLJiWND6qFE-lynf-RrKrYltSzhgmGzIwxzQoteHHWkqRlar7SM2SJwLR7r-6bZOMMupe6oJaSexTURtjvy9fQ00nWPxkDAg760d9zYkUk5rQyCUnR3JjLqpEzFG7olOcxcEScYG8Qqf5ycymEBUQ91bkMz5b8iagd4E9SdE6_RodnSpHWjMdFkwrd0e_5kqONmKUfnbmpjUAK_Ka7J1nRRCXPjC4GOdC3ukxyk0scn0GCmW7-c511Qaz0AzPSd8nUnkNs9y89ReO1Phdh5b-wvclnMZ4spdC85_hEBgvNh3-MANoFkop2tMxi8dIpcmJsy0Ikqjjm8fcqZeIscCQldi063eHFCLYpn56bFU6geFYF09X4LSZnFkVuCwoZ4TRirAsKyUp7DIo5Hb0JZ4FUdfWEl_cwAxFh0rGGkpiy303t-jZ4hPe3Z7NAcJocBla3kwstuW6qRgkS5w0Ea1Ei5xQlebBujwtPbn9oglhdClgktd9T3fc-N8BLblyTscCbEVU15R5hHAHCsHV0Q8qqvnn0SVkPbLes2hqpLw9jGfk5iCgrTkUFLqwZWrtBYKHdcEsMgH4OReh-Ja0lXIi5-igzPGxBQnYT0E40fN3tm2ObY8xcbJL0qpqluZW4IfD-Ty7CAZJXLtIOtcqOm8JJRY0Iq4x0F_pRNk8YgtUjACtlMJZnydulGcXh6xNn1VQccx33JVs6CH7a_TFDC49xB5de0AufXFltZTkiBYk3U5EseQ-pfKjuuDWveXd_LegZYVnuTCXd4j3IqmUDOpiA4Z6j4rdEJao9b3z9xVsaDFlXQrBXGRm237VIcCABKgl1cy1lYXN0LTIw5As.m3u8
-# Canal: https://www.dailymotion.com/video/x9fy21i
-#EXTINF:-1 tvg-logo="https://s1.dmcdn.net/u/BHgY41doCFDRAnWBC/240x240" group-title="🌍 TV Aberta",DailyMotion TV - FHD
-https://vod2.cf.dmcdn.net/sec2(_J_ZOMnevyb5YzE3PfLVR0r9zfQz307G0WC07YFyDja1oaHbZ9wh12Igae2bRXWuzY2HG61dD7fE8ZkUEPYMEVhmGGhSvu88QOaaVPSk4b6QknbY8BCKg4cUoeReCk57Jai8MbYLNEgUa9ldEXmbziiJDaJAW5Sb26UDzaIWdNo)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
+https://sae13.playlist.ttvnw.net/v1/playlist/CocF-bHzQHOF7IhCc7Kjl36vLdG4fmzPligpA-IgmEcbBLAEDjCFC0IY4sTGvui0_SqJe4u0gcG8HMW-HrbcW3Q0O8oId6v0n89SJhc2ORSBpDU9uTLefK405EP9J_3tsOiFKIMow1nQOeu6aGkahFUS9AUINsHEN1ApY7wXGpaahNvHU3iKcRPuCdSIAT6KYIBLhnbG9FKV9Hy4rU1QIbS6RzpJXoqvqc7dbyX1Kerc2CdqbGQ6EL_KdXlkLve-ePQiE7JiQFx1nvXpquzlF1tyncK-OCbju_Q-7_noRQSDipAsCYaXUQ8EQGQmF6lo7kivayG_-VmGDsqKJqiXNUu_2e_nAw5LO9K6zob7A74WhxHksl4-EbYdkPmw1z3YktWYbXZBW2mH_c4ywvsa9e3BEvKspKhqcjUCMEMhMXqw2ahe06MQ3G3lmEUR7BVzTMvKz_3gkIw4SRg-4HwbyW64rxhoSOCZs1VjOteLA8RzZc_BCv-g1c1RorLUoO5KJ-SqoaNiY6I9U4ja-Uz0Gqv3P09Q9P3q2h1BUBEW9aq2_zehbJW5ceYofab6YqvyXS4qcUL1OzLWzD9n2YwT0IA2B0gM3ZalLAHN9g3LRNLJrv0TpTEKm34QC6xLgO-DkP_uQm579Upk7fjTE1okYLS7I2IfeKRZtm23Uh6ir5-gSrZVtpkUFx4bLXZvio5jtpcqybIvo0q4ElUpXAoWZ6xOljb1wog7kpcdVWZR8f1njPMkk_S5aBrF3BSmDq3dTxikYrBguhAddWFskUKmYyvaRSRfAZp2gWzgdf78LeEAcQbSX7hzS7AMawA7DWKEFdxQLYzyLoneUKtrwIFBgQpjUdrd7EbUcykaDHhU4g6ZwlkK8hVaICABKgl1cy1lYXN0LTIw5As.m3u8
+# Canal: https://m.twitch.tv/chaves_chapolin24h
+#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎦 Series",Chaves e Chapolin - 2K
+https://sae13.playlist.ttvnw.net/v1/playlist/CogFCn4d6PQw8rhPXLqkWMYf1tfj9y8Zriji-hDUdA4HicmpvJRgvewjGCiQS4srUJ-AXimUxar-Xi4QssOLDDdRzp5Auh6_WStF7WPOKvF_PN-EkO4VwCzEPMoJVnN1kxPad_ZmXpxYZl3ZAm2YS_QezoEM0bQ2CTzNQXWDu5CGT2Kv_45TYvWvwSElzS6A_y9wTdruBxlLN69mv1XLrgOGuabwyq-4Mze-kBxhOph3d5kLFS-AnnfFNGKenw9nEYdjyz5Xrf7CbiLXuRZsvcuOdJQO4xvJwRejAqgRdrC_b_x45yt8IfyTKPJS7rSD3-Aqg8rEVsNbC4Z0DmeasdPHaSIqbHdT0yKTdvuppoa6BvGzQFpvhbWSA8RGds-Ybf8TC01kg0C_kUAek2mIY7mhHu-vDx2c_zw2j4jzDZCDCVqrQFRWIwPA0uz9JBwARIq6XwWWg5fploaj6OHo6dWuiul3URe5bN2370R-DPPC0B8CDYvSyq9o1K3lIiM22z0GrZ8qdbsETxwE9TCWn16y70Ea_bPNUTob8JbjgdlWWGAdBYbgSuCLyTDm2S6tdLHum8PETTQxybvqzcvUJTtnokeLZWgehXU2zqpAuPB9WNFwa6xiDRvfZhoNJs64pbrZ2JFDAF_6-q6cfHB3zq0MkZxgIAVmJzyndY2RLW0u6Z1bu4cWbOeuQl9qczDb9LSPCkl9WQYW9BigzE57aY6QucasQIdaSZ1vB-D9X4cs98_jsGoMxIRWmNoRasVCOq4DxxLextTYQAp0JsnvHtDcQIK9NpjKQbklqdo3JqF33Upr7BAw3mz6gJ2e4Pi1EO1DObRtaU_NW_MrPA8ckPMj4J9j9JLAhUTyGgxaFUqWm8wJK7vS5PQgASoJdXMtZWFzdC0yMOQL.m3u8
 # Canal: https://www.dailymotion.com/video/x9fy21i
 #EXTINF:-1 tvg-logo="https://s1.dmcdn.net/u/BHgY41doCFDRAnWBC/240x240" group-title="🌍 TV Aberta",DailyMotion TV - HD
-https://vod2.cf.dmcdn.net/sec2(k_FXUwdgOZSymYu32ZW6m4m9YXvf9F9MhcebPDCfn_4q8b4q4aKRgFDVHBHIz8RR2i7rVlUqzgdqbMOSS-Besl2caqU_nEiipg5y3-rOZsG3rcIDM0MV6b2HUwHDnt_f3oHceBrxbQJ958yFZKgRFupbqZWi2HNVKnVE--iXLEo)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
+https://vod2.cf.dmcdn.net/sec2(F6_AxmYFCrYQw9kNuYvv5WwlPLS-ECRRqxNzzYcBeJikJ50UB0_wiKMnPGqxYEX_0O3ISVIn_IYGyZmflov6fNaSHvZk1fOtlg4jc75q2-GfFav6N8nd6ABNtikUWTugju7fh6eqQGosHQCUIQbPVeFHQ_FgR_PrDgzOz9rlL9Y)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
 # Canal: https://www.dailymotion.com/video/x9fy21i
 #EXTINF:-1 tvg-logo="https://s1.dmcdn.net/u/BHgY41doCFDRAnWBC/240x240" group-title="🌍 TV Aberta",DailyMotion TV - 2K
-https://vod2.cf.dmcdn.net/sec2(L28x_IF1cJz0R7KfnsaT7SGrFa92WgeYSgDVPILkU7x4EvvS76Bye6AXiYdcVn_tUmHlSaNj-OGKJZJtQZ0biV5Yrkh_XbjWI9AUnzi3I3DJ4P7dW-qWHn7iuZ-rSJbbZXj8vhv51Fi5khDPAwr4tozopW5gE1TBSzE8DGp8HLE)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
+https://vod2.cf.dmcdn.net/sec2(c0QS3lgrZbny7bTCYDSG8rW_sCl8-k2v0t9F302SKt5DZaIPrNj6XdopJQpV_ajzI5RiUeiYWZJpMgvzwKzV7lQomj0mWfJN54NIvSNLOATtlwqhA85-1E9_lhV6ulO5C1FGhxk2qgitEOsrDZUg8YlSoZNTn0lhCMvnXAkwYOA)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
+# Canal: https://www.dailymotion.com/video/x9fy21i
+#EXTINF:-1 tvg-logo="https://s1.dmcdn.net/u/BHgY41doCFDRAnWBC/240x240" group-title="🌍 TV Aberta",DailyMotion TV - FHD
+https://vod2.cf.dmcdn.net/sec2(qje36dLVda-P8izP-btARhNaeyyYp2yHfCR90pYsqjCqc_yN_sBRFatwB9HU0-WBdsjVxDqu54PmndOYnCf_hpNxwSNxFuIN-gD-cgTUm1TYcbUx26BMGmyuGGPPWk20FVQHIrDExMZBgE6mJ3J272tqTF6jGOIJ20e4-evKwNg)/cloud/477/879/570978774_mp4_h264_aac_hd.m3u8
 # Canal: https://www.youtube.com/@radionovasdepazoficial/live
 #EXTINF:-1 tvg-logo="https://yt3.googleusercontent.com/N2qFz5sN9GWmwrQfJtzKcu6d6w-dmHqE3v3AlfUdB8Y0ikyn1XCxTlEcV-oaRLv7ASepJ0sTRAw=s900-c-k-c0x00ffffff-no-rj" group-title="🙏 Religioso",Rádio Novas de Paz - HD
 Live não ativa
@@ -72,16 +72,13 @@ Live não ativa
 #EXTINF:-1 tvg-logo="https://yt3.googleusercontent.com/N2qFz5sN9GWmwrQfJtzKcu6d6w-dmHqE3v3AlfUdB8Y0ikyn1XCxTlEcV-oaRLv7ASepJ0sTRAw=s900-c-k-c0x00ffffff-no-rj" group-title="🙏 Religioso",Rádio Novas de Paz - 2K
 Live não ativa
 # Canal: https://www.youtube.com/@recordnews/live
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/pt/b/b1/Logotipo_da_Record_News.png" group-title="🌍 TV Aberta",Record News - 2K
-Live não ativa
-# Canal: https://www.youtube.com/@recordnews/live
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/pt/b/b1/Logotipo_da_Record_News.png" group-title="🌍 TV Aberta",Record News - HD
 Live não ativa
 # Canal: https://www.youtube.com/@recordnews/live
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/pt/b/b1/Logotipo_da_Record_News.png" group-title="🌍 TV Aberta",Record News - FHD
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/pt/b/b1/Logotipo_da_Record_News.png" group-title="🌍 TV Aberta",Record News - 2K
 Live não ativa
-# Canal: https://www.youtube.com/@jjovempannews/live
-#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/5/5d/Jovem_Pan_News_logo.png" group-title="📰 TV Notícias",Jovem Pan News - FHD
+# Canal: https://www.youtube.com/@recordnews/live
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/pt/b/b1/Logotipo_da_Record_News.png" group-title="🌍 TV Aberta",Record News - FHD
 Live não ativa
 # Canal: https://www.youtube.com/@jjovempannews/live
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/5/5d/Jovem_Pan_News_logo.png" group-title="📰 TV Notícias",Jovem Pan News - 2K
@@ -89,8 +86,8 @@ Live não ativa
 # Canal: https://www.youtube.com/@jjovempannews/live
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/5/5d/Jovem_Pan_News_logo.png" group-title="📰 TV Notícias",Jovem Pan News - HD
 Live não ativa
-# Canal: https://m.twitch.tv/tecnosh
-#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎮 Jogos",TecnoSH - 2K
+# Canal: https://www.youtube.com/@jjovempannews/live
+#EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/5/5d/Jovem_Pan_News_logo.png" group-title="📰 TV Notícias",Jovem Pan News - FHD
 Live não ativa
 # Canal: https://m.twitch.tv/tecnosh
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎮 Jogos",TecnoSH - HD
@@ -98,6 +95,10 @@ Live não ativa
 # Canal: https://m.twitch.tv/tecnosh
 #EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎮 Jogos",TecnoSH - FHD
 Live não ativa
+# Canal: https://m.twitch.tv/tecnosh
+#EXTINF:-1 tvg-logo="https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png" group-title="🎮 Jogos",TecnoSH - 2K
+Live não ativa
+
 
 
 ## 🌎 TV Aberta
